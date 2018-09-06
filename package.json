@@ -16,7 +16,9 @@
     "sleep-promise": "^8.0.1"
   },
   "devDependencies": {
+    "jsdom": "12.0.0",
     "mocha": "^5.1.1",
+    "mocha-jsdom": "^2.0.0",
     "mochawesome": "^3.0.2"
   }
 }
