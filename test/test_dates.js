@@ -1,4 +1,4 @@
-var Dev = false
+var Dev = true
 var webdriver = require('selenium-webdriver'),
     By = webdriver.By,
     assert =require('assert'),
@@ -26,42 +26,44 @@ function tests(browser){
       page.driver.manage().window().setPosition(0, 0);
       page.visit('https://admin.rev-prep.com/login');
       page.loginAdmin('justice.sommer@revolutionprep.com','revprep123');
+      // page.dismissRingCentralModal()
+      // .then(() => sleep(500));
     });
     afterEach(function(){
-      if(Dev){
-        return
-      }
+      // if(Dev){
+      //   return
+      // }
       page.quit();
     });
 
     function gotoTestDatesScreen(){
-      return page.clickElement('body > ui-view > app > div > div > div > left-nav > div > ul > li:nth-child(7) > a > span')
-      .then(page.clickElement('body > ui-view > app > div > div > div > left-nav > div > ul > li:nth-child(7) > ul > li:nth-child(4) > a'));
+      return page.clickElement('/html/body/ui-view/app/div/div/sidebar/nav/div/div[4]/a/span','xpath')
+      .then(page.clickElement('/html/body/div[2]/div/a[4]','xpath'));
 
     }
 
     it('Test Dates screen is accessable', function(){
       this.retries(trys)
       gotoTestDatesScreen();
-      var verificationText = page.getInnerHTML('body > ui-view > app > div > div > div > div > div > test-dates > div > div.m-t-lg.m-b-lg > h1');
+      var verificationText = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/test-dates/div/div[1]/h1','xpath');
       verificationText.txt.should.eventually.equal('Test Dates');
     })
 
     it('Edit Test Date modal is accessable', function(){
       this.retries(trys)
       gotoTestDatesScreen()
-      .then(page.clickElement('body > ui-view > app > div > div > div > div > div > test-dates > div > div.ng-scope > table > tbody > tr:nth-child(1) > td.text-right > button'));
-      var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > test-date-edit-modal > div.modal-header > h2 > span:nth-child(3)');
-      verificationText.txt.should.eventually.equal('Edit');
+      .then(page.clickElement('/html/body/ui-view/app/div/div/div/div/ui-view/test-dates/div/div[2]/table/tbody/tr[1]/td[4]/button', 'xpath'));
+      var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/test-date-edit-modal/div[1]/h2', 'xpath');
+      verificationText.txt.should.eventually.equal('\n    Edit\n    Test Date\n  ');
     })
 
     it('Add Test Date modal is accessable', function(){
       this.retries(trys)
       gotoTestDatesScreen()
 
-      .then(page.clickElement('body > ui-view > app > div > div > div > div > div > test-dates > div > div.m-t-lg.m-b-lg > button'));
-      var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > test-date-edit-modal > div.modal-header > h2 > span:nth-child(2)');
-      verificationText.txt.should.eventually.equal('Add');
+      .then(page.clickElement('/html/body/ui-view/app/div/div/div/div/ui-view/test-dates/div/div[1]/button', 'xpath'));
+      var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/test-date-edit-modal/div[1]/h2', 'xpath');
+      verificationText.txt.should.eventually.equal('\n    Add\n    Test Date\n  ');
     })
 
     var testDate = {};
@@ -70,11 +72,13 @@ function tests(browser){
       this.retries(trys)
       testDate = page.randomDate();
       gotoTestDatesScreen()
-      .then(page.clickElement('body > ui-view > app > div > div > div > div > div > test-dates > div > div.m-t-lg.m-b-lg > button')) 
-      .then(page.enterDate(testDate["numerical"],'/html/body/div[1]/div/div/test-date-edit-modal/div[2]/form/div/div[1]/div/div/input', "xpath"))
-      .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[1]/h2/span[1]',"xpath"))
-      .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[2]/form/div/div[2]/div/select/optgroup[1]/option[4]',"xpath"))
-      .then(page.clickElement('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > test-date-edit-modal > div.modal-footer > button.btn.btn-primary > span'))
+      .then(page.clickElement('/html/body/ui-view/app/div/div/div/div/ui-view/test-dates/div/div[1]/button', 'xpath')) 
+      .then(page.enterDate(testDate["numerical"],'/html/body/div[1]/div/div/test-date-edit-modal/div[2]/form/div[1]/div/div/input', "xpath"))
+      //this clicks the modal title to close the calendar selector 
+      .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[1]/h2','xpath'))
+      .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[2]/form/div[2]/div/select','xpath'))
+      .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[2]/form/div[2]/div/select/optgroup[1]/option[1]',"xpath"))
+      .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[3]/button','xpath'))
       var verificationText = page.getInnerHTML('#toast-container > div > div > div > div.toast-title');
       verificationText.txt.should.eventually.equal('Success');
     })
@@ -83,11 +87,13 @@ function tests(browser){
       this.retries(trys)
       testDate = page.randomDate();
       gotoTestDatesScreen()
-      .then(page.clickElement('body > ui-view > app > div > div > div > div > div > test-dates > div > div.ng-scope > table > tbody > tr:nth-child(1) > td.text-right > button'))
-      .then(page.enterDate(testDate["numerical"],'/html/body/div[1]/div/div/test-date-edit-modal/div[2]/form/div/div[1]/div/div/input', "xpath"))
-      .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[1]/h2/span[2]',"xpath"))
-      .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[2]/form/div/div[2]/div/select/optgroup[1]/option[4]',"xpath"))
-      .then(page.clickElement('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > test-date-edit-modal > div.modal-footer > button.btn.btn-primary > span'))
+      .then(page.clickElement('/html/body/ui-view/app/div/div/div/div/ui-view/test-dates/div/div[2]/table/tbody/tr[1]/td[4]/button','xpath'))
+      .then(page.enterDate(testDate["numerical"],'/html/body/div[1]/div/div/test-date-edit-modal/div[2]/form/div[1]/div/div/input', "xpath"))
+       //this clicks the modal title to close the calendar selector 
+      .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[1]/h2','xpath'))
+      .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[2]/form/div[2]/div/select',"xpath"))
+      .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[2]/form/div[2]/div/select/optgroup[1]/option[2]',"xpath"))
+      .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[3]/button[2]','xpath'))
       var verificationText = page.getInnerHTML('#toast-container > div > div > div > div.toast-title');
       verificationText.txt.should.eventually.equal('Success');
     })
@@ -98,11 +104,11 @@ function tests(browser){
       gotoTestDatesScreen()
       var verificationText = ''
       function getSecondLineDate(){
-        verificationText = page.getInnerHTML('body > ui-view > app > div > div > div > div > div > test-dates > div > div.ng-scope > table > tbody > tr:nth-child(2) > td:nth-child(1) > a');
+        verificationText = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/test-dates/div/div[2]/table/tbody/tr[2]/td[1]/a','xpath');
         return verificationText;
       }
-      page.clickElement('body > ui-view > app > div > div > div > div > div > test-dates > div > div.ng-scope > table > tbody > tr:nth-child(1) > td.text-right > button')
-      .then(page.clickElement('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > test-date-edit-modal > div.modal-footer > button.btn.btn-danger.pull-left.ng-scope'))
+      page.clickElement('/html/body/ui-view/app/div/div/div/div/ui-view/test-dates/div/div[2]/table/tbody/tr[1]/td[4]/button','xpath')
+      .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[3]/button[1]', 'xpath'))
       .then(page.acceptAlert())
 
       var verificationText2 = page.getInnerHTML('#toast-container > div > div > div > div.toast-title');
