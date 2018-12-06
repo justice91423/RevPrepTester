@@ -1,6 +1,6 @@
 // this is now
 
-var Dev = true
+var Dev = false
 var webdriver = require('selenium-webdriver'),
     By = webdriver.By,
     assert =require('assert'),
@@ -355,14 +355,14 @@ function tests(browser){
 
 var Browserss = [
   'internet explorer',
-  'firefox',
-  'chrome'
+  'chrome',
+  'firefox'
   
   ];
 
 if(Dev){
   var Browserss = [
-  'firefox'
+  'chrome'
   ];
 }
 

@@ -1,5 +1,3 @@
-// this is now
-
 var Dev = false
 var webdriver = require('selenium-webdriver'),
     By = webdriver.By,
@@ -10,6 +8,7 @@ var { describe, it , after, before} = require('selenium-webdriver/testing');
 var Page = require('../lib/admin_dashboard');
 var Page = require('../lib/admin_dashboard_permissions');
 var Page = require('../lib/student_home_page');
+var Page = require('../lib/admin_employee');
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var should = chai.should();
@@ -29,10 +28,6 @@ function tests(browser){
       page.driver.manage().window().setPosition(0, 0);
       page.driver.manage().window().setSize(1600,1080);
       page.visit('https://admin.rev-prep.com/login');
-      // page.loginAdmin('permissions@permissions.com','revprep123');
-      // page.loginAdmin('justice.sommer@revolutionprep.com','revprep123');
-      // page.dismissRingCentralModal()
-      // .then(() => sleep(500));
     });
     afterEach(function(){
       if(Dev){
@@ -41,73 +36,36 @@ function tests(browser){
       page.quit();
     });
 
-    var adminDashSections = ["", "", "", "Home", "Call List", "Leads", "Customers", "Lead Sources", "Tutor Search", "Advisor Teams", "Tutor Teams", "Students", "Parents", "Tutors", "Employees", "Course Search", "Session Search", "Departmens", "Test Dates", "Transactions", "Daily Sales", "Advisor Activity", "Shipments", "Materials", "Payrolls", "Refunds", "Essay Graders", "Coupons"]
-
-    function gotoCouponsScreen(){
-      return page.clickElement('/html/body/ui-view/app/div/div/sidebar/nav/div/a[9]/span','xpath')
-      .then(() => sleep(500))
-    }
-
-    var permissions = [
-      {
-        name:"Operations",
-        singleItems: ["Home","Call List","Shipments","Materials","Refunds","Coupons"],
-        sectionsAndItems: [
-          {header: "Advisor", items :["Leads","Customers","Lead Sources","Tutor Search"]},
-          {header: "Teams", items :["Advising Teams","Tutor Teams"]},
-          {header: "Users", items :["Students","Parents"]},
-          {header: "Courses", items :["Course Search","Session Search","Test Dates"]},
-          {header: "Reports", items :["Transactions Report","Daily Sales Report","Advisor Activity Report"]},
-          {header: "Essays", items :["Essay Graders"]}
-        ],
-      }
-      ,
-      {
-        name:"Academic Advisor",
-        singleItems: ["Home","Call List"],
-        sectionsAndItems: [
-          {header: "Advisor", items :["Leads","Customers","Lead Sources","Tutor Search"]},
-          {header: "Teams", items :["Advising Teams"]},
-          {header: "Users", items :["Students","Parents"]},
-          {header: "Courses", items :["Course Search"]},
-          {header: "Reports", items :["Transactions Report","Daily Sales Report","Advisor Activity Report"]}
-        ],
-      }
-
-
-    ]
+    var sourceFile = require('../lib/permissions_array.js');
+    var permissions = sourceFile.permissions_a;
 
     for (var y = permissions.length - 1; y >= 0; y--) {
       
-      navbarItemTest(permissions[y]["name"],permissions[y]["singleItems"],permissions[y]["sectionsAndItems"]);
+      navbarItemTest(permissions[y]["name"],permissions[y]["singleItems"],permissions[y]["sectionsAndItems"],permissions[y]["optionNumber"]);
     }
 
-    function setTitle(title){
-     
-      // console.log("setTitle is happening");
-      // page.visit('https://admin.rev-prep.com/employees/2327/contacts')
+    function setTitle(optionNumber){
       var ret = sleep(500)
-      .then(() => page.openEditEmployeeModal(title))
+      .then(() => page.openEditEmployeeModal())
       .then(() => sleep(500))
-      .then(() => page.setTitleFromEditEmployeeModal(title))
-      .then(() => page.clickUpdateEditEmployeeModal(title))
-      .then(() => page.openEditEmployeeModal(title))
+      .then(() => page.setTitleFromEditEmployeeModal(optionNumber))
+      .then(() => page.clickUpdateEditEmployeeModal())
+      .then(() => page.openEditEmployeeModal())
       return ret
     }
 
-    function navbarItemTest(name,singleItems,sectionsAndItems){
+    function navbarItemTest(name,singleItems,sectionsAndItems,optionNumber){
       it('Set '+name+' as the users Title', function(){
+        this.retries(trys)
         page.loginAdmin('justice.sommer@revolutionprep.com','revprep123')
-        .then(() => setTitle(name))
+        .then(() => setTitle(optionNumber))
 
-        var titleSelected = page.checkTitleFromEditEmployeeModal(name)
+        var titleSelected = page.checkTitleFromEditEmployeeModal(optionNumber)
           titleSelected.sel.should.eventually.equal('true',name+" is not set as employee title");
       });
       it(name+' role provides correct Navbar items', function(){
-
-      page.loginAdmin('permissions@permissions.com','revprep123')
-        
         this.retries(trys)
+        page.loginAdmin('permissions@permissions.com','revprep123')
         var itemCounter = 3;
         var singleItemsVerificationTexts={};
         for (var i = singleItems.length - 1; i >= 0; i--) {
@@ -138,8 +96,8 @@ function tests(browser){
 }
 
 var Browserss = [
-  // 'internet explorer',
-  'firefox',
+  'internet explorer',
+  'firefox'
   'chrome'
   ];
 
