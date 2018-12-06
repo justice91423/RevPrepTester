@@ -1,4 +1,4 @@
-var Dev = 0
+var Dev = 1
 var webdriver = require('selenium-webdriver'),
     By = webdriver.By,
     assert =require('assert'),
@@ -9,7 +9,7 @@ var sleep = require('sleep-promise');
 var { describe, it , after, before} = require('selenium-webdriver/testing');
 // var Login = require('../lib/Login');
 var Page = require('../lib/student_home_page');
-
+var sleep = require('sleep-promise');
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var should = chai.should();
@@ -17,7 +17,7 @@ var page;
 chai.use(chaiAsPromised);
 var trys = 2
 if(Dev){
-  var trys = 0
+  var trys = 2
 }
 
 function tests(browser){
@@ -26,6 +26,7 @@ function tests(browser){
     beforeEach(function(){
       page = new Page(browser);
       page.driver.manage().window().setPosition(0, 0);
+      page.driver.manage().window().setSize(1600,1080);
       page.visit('https://enroll.revolutionprep.com/login');
       page.loginAdmin('justicetestsommertest','revprep');
     });
@@ -98,78 +99,86 @@ function tests(browser){
     it('The Homework Help tab is accesable', function(){
       this.retries(trys)
       // dismissModals()
-      page.clickElement('#navbar > ul > li:nth-child(2) > a');
-      var verificationText = page.getInnerHTML('body > ui-view > app > div.animated.fadeIn > div > div.view-container > div > ui-view > homework-help > div > div.col-md-7 > div.homework-help__header.m-t-md > h1');
-      verificationText.txt.should.eventually.equal('\n            <strong>HOMEWORK</strong> HELP\n          ');
+      page.clickElement('body > ui-view > app > div > navigation > nav > div > ul > li:nth-child(2) > a > span.ng-scope.ng-binding');
+      var verificationText = page.getInnerHTML('body > ui-view > app > div > div > div.view-frame.animate-view > ui-view > homework-help > div > div.col-lg-7 > div.homework-help__header > h2 > span');
+      verificationText.txt.should.eventually.equal('HELP');
     })
 
     it('The Schedule tab is accesable', function(){
       this.retries(trys)
       // dismissModals()
-      page.clickElement('#navbar > ul > li:nth-child(3) > a');
-      var verificationText = page.getInnerHTML('#student-schedule > div > div.col-xs-5.col-sm-6 > h1');
+      page.clickElement('body > ui-view > app > div > navigation > nav > div > ul > li:nth-child(4) > a > span');
+      var verificationText = page.getInnerHTML('#student-schedule > div > h1');
       verificationText.txt.should.eventually.equal('Schedule');
     })
 
     it('The Home tab is accesable', function(){
       this.retries(trys)
-      // dismissModals()
-      page.clickElement('#navbar > ul > li:nth-child(2) > a')
-      .then(page.clickElement('#navbar > ul > li:nth-child(1) > a'))
-      var verificationText = page.getInnerHTML('body > ui-view > app > div > div > div.view-container > div > ui-view > home > div > div.row.home__header > div.col-xs-7.col-sm-8 > h1');
-      verificationText.txt.should.eventually.equal('Hello Justicetest!');
+      function getHelloText(){
+        var verificationText = page.getInnerHTML('body > ui-view > app > div > div > div.view-frame.animate-view > ui-view > home > div > div.d-flex.home__header.pb-4.mb-4 > h1 > span');
+        verificationText.txt.should.eventually.equal('Hello');
+      }
+      function getScheduleText(){
+          var ScheduleText = page.getInnerHTML('body > ui-view > app > div > div > div.view-frame.animate-view > ui-view > homework-help > div > div.col-lg-7 > div.homework-help__header > h2 > span');
+          ScheduleText.txt.should.eventually.equal('HELP');
+      }
+      page.clickElement('body > ui-view > app > div > navigation > nav > div > ul > li:nth-child(2) > a > span')
+      .then(() => getScheduleText())
+      .then(() => sleep(2000))
+      .then(() => page.clickElement('body > ui-view > app > div > navigation > nav > div > ul > li:nth-child(1) > a > span'))
+      .then(() => getHelloText())
     })
 
     it('The Exams tab is accesable', function(){
       this.retries(trys)
-      // dismissModals()
-      page.clickElement('#navbar > ul > li:nth-child(4) > a');
-      var verificationText = page.getInnerHTML('body > ui-view > app > div > div > div.view-container > div > ui-view > div.row.ng-scope > div.col-sm-4 > h1');
+      page.clickElement('body > ui-view > app > div > navigation > nav > div > ul > li:nth-child(5) > a > span');
+      var verificationText = page.getInnerHTML('body > ui-view > app > div > div > div.view-frame.animate-view > ui-view > div.row.ng-scope > div.col-4 > h1');
       verificationText.txt.should.eventually.equal('Exams');
     })
 
      it('The Notification modal appeared', function(){
       this.retries(trys)
       // dismissModals()
-      page.clickElement('#navbar > ul > li:nth-child(5) > a');
-      var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > div.modal-header.ng-scope > h2');
+      page.clickElement('body > ui-view > app > div > navigation > nav > div > ul > li:nth-child(6) > a > span');
+      var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > div > div.notifications-modal__header > h2');
       verificationText.txt.should.eventually.contain('Notifications');
     })
 
     it('The Edit Profile modal is accessable', function(){
       this.retries(trys)
       // dismissModals()
-      page.clickElement('#simple-dropdown')
+      page.clickElement('body > ui-view > app > div > navigation > nav > div > ul > li.my-sm-2.my-md-0.dropdown > a')
       // .then(sleep(10000))
-      .then(page.clickElement('#navbar > ul > li:nth-child(6) > div > ul > li:nth-child(1) > a'))
-      var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > edit-profile-modal > div.modal-body > form > div > div.col-sm-7 > div:nth-child(1) > label');
+      .then(page.clickElement('body > ui-view > app > div > navigation > nav > div > ul > li.my-sm-2.my-md-0.dropdown.open > div > a:nth-child(1)'))
+      var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > edit-profile-modal > div > form > div.col-7 > div:nth-child(1) > label');
       verificationText.txt.should.eventually.equal('Name:');
     })
 
     it('The Add study area modal is accessable via the Schedule screen', function(){
       this.retries(trys)
       // dismissModals()
-      page.clickElement('#navbar > ul > li:nth-child(3) > a')
-      .then(page.clickElement('#student-schedule > student-schedule > div > div.col-sm-3.clearfix > study-areas > div > div:nth-child(3) > div.view-mode > a'))
-      .then(page.clickElement('#student-schedule > student-schedule > div > div.col-sm-3.clearfix > study-areas > div > div:nth-child(3) > div.edit-mode > a.btn.btn-primary'))
-      var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > div:nth-child(3) > div.modal-body > form > div > div:nth-child(1) > label');
-      verificationText.txt.should.eventually.equal('Subject:<span class="required"></span>');
+      page.clickElement('body > ui-view > app > div > navigation > nav > div > ul > li:nth-child(4) > a > span')
+      .then(page.clickElement('#student-schedule > student-schedule > div > div.col-sm-3.clearfix > study-areas > div > div > div.view-mode > button'))
+      .then(() => sleep(500))
+      .then(page.clickElement('#student-schedule > student-schedule > div > div.col-sm-3.clearfix > study-areas > div > div > div.edit-mode > button.btn.btn-primary.ng-scope.ng-binding'))
+      var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/study-areas-modal/div/div[1]/h1','xpath');
+      verificationText.txt.should.eventually.equal('\n      Add\n      study area\n    ');
     })
 
     it('The Subjects modal is accessable via the Homework Help screen', function(){
       this.retries(trys)
       // dismissModals()
-      page.clickElement('#navbar > ul > li:nth-child(2) > a')
-      .then(page.clickElement('body > ui-view > app > div > div > div.view-container > div > ui-view > homework-help > div > div.col-md-7 > div.homework-help__body > h2 > a > i'))
-      var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > study-area-edit-modal > div > div.study-area-edit-modal__header > p');
+      page.clickElement('body > ui-view > app > div > navigation > nav > div > ul > li:nth-child(2) > a > span')
+      .then(page.clickElement('body > ui-view > app > div > div > div.view-frame.animate-view > ui-view > homework-help > div > div.col-lg-7 > div.homework-help__body > button'))
+      var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > study-area-edit-modal > div > div.study-area-edit-modal__header.d-flex.flex-column > p');
       verificationText.txt.should.eventually.equal('\n      Which classes are you currently taking in school?\n      This will help us customize your Revolution experience.\n    ');
     })
 
     it('The Homework Help info modal is accessable via the Homework Help screen', function(){
       this.retries(trys)
       // dismissModals()
-      page.clickElement('#navbar > ul > li:nth-child(2) > a')
-      .then(page.clickElement('body > ui-view > app > div.animated.fadeIn > div > div.view-container > div > ui-view > homework-help > div > div.col-md-4.col-md-offset-1 > homework-help-sidebar > div > div.card.homework-help-sidebar__limited.visible-md.visible-lg.ng-scope > a'))
+      page.clickElement('body > ui-view > app > div > navigation > nav > div > ul > li:nth-child(2) > a > span')
+      .then(page.clickElement('body > ui-view > app > div > div > div.view-frame.animate-view > ui-view > homework-help > div > div.col-lg-4.offset-lg-1 > homework-help-sidebar > div > div.card.card-body.shadow.rounded.mb-4.homework-help-sidebar__limited.d-none.d-sm-none.d-md-none.d-lg-block.ng-scope > button'))
       var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > homework-help-info-modal > div > div.homework-help-info-modal__footer > p > strong');
       verificationText.txt.should.eventually.equal('(877) 836-1207');
     })
@@ -178,9 +187,9 @@ function tests(browser){
     it('Student can logout', function(){
       this.retries(trys)
       // dismissModals()
-      page.clickElement('#simple-dropdown')
-      .then(page.clickElement('#navbar > ul > li:nth-child(6) > div > ul > li:nth-child(2) > a'))
-      var verificationText = page.getInnerHTML('body > ui-view > div > div:nth-child(1) > div:nth-child(2) > div > form > div:nth-child(1) > label');
+      page.clickElement('body > ui-view > app > div > navigation > nav > div > ul > li.my-sm-2.my-md-0.dropdown > a')
+      .then(page.clickElement('body > ui-view > app > div > navigation > nav > div > ul > li.my-sm-2.my-md-0.dropdown.open > div > a.dropdown-item.ng-scope.ng-binding'))
+      var verificationText = page.getInnerHTML('body > ui-view > div.loginColumns.animated.fadeInDown.ng-scope > div > div:nth-child(2) > div > form > div.form-group.has-error > label');
       verificationText.txt.should.eventually.equal('Username');
     })
 

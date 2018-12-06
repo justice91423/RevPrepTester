@@ -362,7 +362,7 @@ var Browserss = [
 
 if(Dev){
   var Browserss = [
-  'chrome'
+  'firefox'
   ];
 }
 
