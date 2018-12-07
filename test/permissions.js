@@ -97,7 +97,7 @@ function tests(browser){
 
 var Browserss = [
   'internet explorer',
-  'firefox'
+  'firefox',
   'chrome'
   ];
 

@@ -34,9 +34,9 @@ function tests(browser){
       // .then(() => sleep(500));
     });
     afterEach(function(){
-      // if(Dev){
-      //   return
-      // }
+      if(Dev){
+        return
+      }
       page.quit();
     });
 
