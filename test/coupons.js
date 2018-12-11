@@ -143,7 +143,7 @@ function tests(browser){
         var recurrence = 0;
         var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
         // console.log("finalPrice = " + finalPrice)
-        gotoCouponsScreen()
+        page.gotoCouponsScreen()
         .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,"restrictedTo",couponCode))
         .then(() => sleep(500))
         .then(() => startPurchaseApplyCoupon(couponCode))
@@ -155,14 +155,14 @@ function tests(browser){
 
     it('Coupons screen is accessable', function(){
       this.retries(trys)
-      gotoCouponsScreen();
+      page.gotoCouponsScreen();
       var verificationText = page.getInnerHTML('body > ui-view > app > div > div > div > div > ui-view > coupons > div.my-4.d-flex.justify-content-between > h1');
       verificationText.txt.should.eventually.equal('Coupons');
     })
 
     it('New Coupon modal is accessable', function(){
       this.retries(trys)
-      gotoCouponsScreen()
+      page.gotoCouponsScreen()
       .then(page.clickElement('body > ui-view > app > div > div > div > div > ui-view > coupons > div.my-4.d-flex.justify-content-between > button'));
       var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > coupon-modal > div.modal-header > h2');
       verificationText.txt.should.eventually.equal('\n    New Coupon\n  ');
@@ -170,7 +170,7 @@ function tests(browser){
 
     it('Edit Coupon modal is accessable', function(){
       this.retries(trys)
-      gotoCouponsScreen()
+      page.gotoCouponsScreen()
       .then(page.clickElement('body > ui-view > app > div > div > div > div > ui-view > coupons > table > tbody > tr:nth-child(1) > td.text-right > button'));
       var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > coupon-modal > div.modal-header > h2');
       verificationText.txt.should.eventually.equal('\n    Edit Coupon\n  ');
@@ -214,7 +214,7 @@ function tests(browser){
         var couponCode = page.makeCouponCode();
         var errorText = "\n          Coupon \'"+couponCode+"\' cannot be applied to this order\n        "
         var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
-        gotoCouponsScreen()
+        page.gotoCouponsScreen()
         .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,"restrictedTo",couponCode))
         useUpRedemptions(redemptions,couponCode,finalPrice)
         .then(() => sleep(500))
@@ -240,12 +240,12 @@ function tests(browser){
         if(!dollars){
           finalPrice = "$" + ((99 * (discount/100)).toFixed(2));
         }
-        gotoCouponsScreen()
+        page.gotoCouponsScreen()
         .then(() => page.createNewCoupon(name,experationDate['numerical'],"Retail","catigory","description",discount,dollars,"eachLineItem","minAmount",recurrence,redemptions,"restrictedTo",couponCode))
         // .then(() => page.visit('https://enroll.rev-prep.com/cart/tutor-packages'))
         .then(() => page.visit('https://admin.rev-prep.com/coupons'))
         // .then(() => page.dismissRingCentralModal())
-        // .then(() => gotoCouponsScreen())
+        // .then(() => page.gotoCouponsScreen())
         // .then(() => sleep(500))
         .then(() => page.searchCoupons(false,false,name,false))
         .then(() => readFirstCouponName())
@@ -268,7 +268,7 @@ function tests(browser){
           finalPrice = "$" + ((99 * (discount/100)).toFixed(2));
         }
 
-        gotoCouponsScreen()
+        page.gotoCouponsScreen()
         .then(() => page.createNewCoupon(name,experationDate['numerical'],"Retail","catigory","description",discount,dollars,"eachLineItem","minAmount",recurrence,redemptions,"restrictedTo",couponCode))
         // .then(() => page.visit('https://enroll.rev-prep.com/cart/tutor-packages'))
         .then(() => page.visit('https://admin.rev-prep.com/coupons'))
@@ -292,7 +292,7 @@ function tests(browser){
         var finalPrice = getFinalPriceMembershipOnly(false,discount,dollars);
         var targetText = "Coupon: "+name+" ($"+discount+".00 off)\n            ";
 
-        gotoCouponsScreen()
+        page.gotoCouponsScreen()
         .then(() => page.createNewCoupon(name,experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,"restrictedTo",couponCode))
         .then(() => sleep(500))
         .then(() => startPurchaseMembershipOnlyApplyCoupon(couponCode))
@@ -316,7 +316,7 @@ function tests(browser){
           var experationDate = page.randomDate();
           var couponCode = page.makeCouponCode();
           var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
-          gotoCouponsScreen()
+          page.gotoCouponsScreen()
           .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,restrictedTo,couponCode))
           startMembershipPurchaseApplyCoupon(couponCode)
           .then(() => sleep(500))
