@@ -107,6 +107,14 @@ if(Dev){
   ];
 }
 
+if(process.env.browser){
+  var Browserss = [
+    process.env.browser
+  ];
+  // env KEY=YOUR_KEY mocha test/;
+  // https://stackoverflow.com/questions/16144455/mocha-tests-with-extra-options-or-parameters
+}
+
 for (var i = Browserss.length - 1; i >= 0; i--) {
   tests(Browserss[i])
 };

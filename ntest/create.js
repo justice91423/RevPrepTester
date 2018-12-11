@@ -1,4 +1,4 @@
-var Dev = false
+var Dev = true
 var webdriver = require('selenium-webdriver'),
     By = webdriver.By,
     assert =require('assert'),
@@ -59,18 +59,21 @@ function tests(browser){
     it('Create a lead and search for it', function(){
       this.retries(trys)
 
-      console.log("this is it " + key);
       var firstName = page.randomString(10,"alpha");
       var lastName = page.randomString(10,"alpha");
 
-      page.clickCreateOption(1)
-      .then(() => page.fillNewLead(firstName,lastName))
-      .then(() => page.clickCreateButtonNewLeadModal())
-      .then(() => sleep(5000))
-      .then(() => page.clickXtoCloseCRM())
-      .then(() => sleep(500))
-      .then(() => page.clickSearch())
-      .then(() => sleep(500))
+      // page.clickCreateOption(1)
+      // .then(() => page.fillNewLead(firstName,lastName))
+      // .then(() => page.clickCreateButtonNewLeadModal())
+      // .then(() => sleep(5000))
+      // .then(() => page.clickXtoCloseCRM())
+      // .then(() => sleep(500))
+      // .then(() => page.clickSearch())
+      // .then(() => sleep(500))
+      // .then(() => page.enterSearchText(firstName+" "+lastName))
+
+      page.clickSearch()
+      .then(() => sleep(2000).sendKeys("hey"))
       .then(() => page.enterSearchText(firstName+" "+lastName))
 
       // var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[1]/div/h4/span[1]','xpath');
@@ -97,7 +100,8 @@ if(process.env.browser){
   var Browserss = [
     process.env.browser
   ];
-  // var Browserss = process.env.browser;
+  // env KEY=YOUR_KEY mocha test/;
+  // https://stackoverflow.com/questions/16144455/mocha-tests-with-extra-options-or-parameters
 }
 
 for (var i = Browserss.length - 1; i >= 0; i--) {
