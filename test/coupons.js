@@ -29,9 +29,9 @@ function tests(browser){
       page.driver.manage().window().setPosition(0, 0);
       page.driver.manage().window().setSize(1600,1080);
       page.visit('https://admin.rev-prep.com/login');
-      page.loginAdmin('justice.sommer@revolutionprep.com','revprep123');
+      page.loginAdmin('justice.sommer@revolutionprep.com','revprep123')
       // page.dismissRingCentralModal()
-      // .then(() => sleep(500));
+      .then(() => sleep(1000));
     });
     afterEach(function(){
       if(Dev){
@@ -41,8 +41,9 @@ function tests(browser){
     });
 
     function gotoCouponsScreen(){
-      return page.clickElement('/html/body/ui-view/app/div/div/sidebar/nav/div/a[9]/span','xpath')
-      .then(() => sleep(500))
+       var ret = page.clickElement('/html/body/ui-view/app/div/div/sidebar/nav/div/a[9]/span','xpath')
+      // .then(() => sleep(5000));
+      return ret
     }
 
     function startPurchaseApplyCoupon(couponCode){
@@ -144,25 +145,37 @@ function tests(browser){
         var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
         // console.log("finalPrice = " + finalPrice)
         page.gotoCouponsScreen()
+        // .then(() => sleep(1000))
         .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,"restrictedTo",couponCode))
         .then(() => sleep(500))
         .then(() => startPurchaseApplyCoupon(couponCode))
         .then(() => sleep(200))
         .then(() => readTotal())
-        .then((verificationText) => verificationText.txt.should.eventually.equal(finalPrice))
+        .then(function(verificationText) { 
+          // var promise1 = Promise.resolve(verificationText.txt);
+          // promise1.then(function(promise1,) {
+            // verificationText.txt.should.eventually.equal(finalPrice, "The total equaled "+promise1+" instead of "+finalPrice)
+            verificationText.txt.should.eventually.equal(finalPrice, "The total equaled did not equal "+finalPrice+" using coupon code "+couponCode)
+          // })
+        })
       })
     }
 
     it('Coupons screen is accessable', function(){
       this.retries(trys)
-      page.gotoCouponsScreen();
-      var verificationText = page.getInnerHTML('body > ui-view > app > div > div > div > div > ui-view > coupons > div.my-4.d-flex.justify-content-between > h1');
-      verificationText.txt.should.eventually.equal('Coupons');
+      page.gotoCouponsScreen()
+    // .then(() => sleep(1000))
+      // .then(() => {
+        var verificationText = page.getInnerHTML('body > ui-view > app > div > div > div > div > ui-view > coupons > div.my-4.d-flex.justify-content-between > h1');
+        verificationText.txt.should.eventually.equal('Coupons');
+      // })
+      
     })
 
     it('New Coupon modal is accessable', function(){
       this.retries(trys)
       page.gotoCouponsScreen()
+    // .then(() => sleep(1000))
       .then(page.clickElement('body > ui-view > app > div > div > div > div > ui-view > coupons > div.my-4.d-flex.justify-content-between > button'));
       var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > coupon-modal > div.modal-header > h2');
       verificationText.txt.should.eventually.equal('\n    New Coupon\n  ');
@@ -171,6 +184,7 @@ function tests(browser){
     it('Edit Coupon modal is accessable', function(){
       this.retries(trys)
       page.gotoCouponsScreen()
+    // .then(() => sleep(1000))
       .then(page.clickElement('body > ui-view > app > div > div > div > div > ui-view > coupons > table > tbody > tr:nth-child(1) > td.text-right > button'));
       var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > coupon-modal > div.modal-header > h2');
       verificationText.txt.should.eventually.equal('\n    Edit Coupon\n  ');
@@ -215,6 +229,7 @@ function tests(browser){
         var errorText = "\n          Coupon \'"+couponCode+"\' cannot be applied to this order\n        "
         var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
         page.gotoCouponsScreen()
+    // .then(() => sleep(1000))
         .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,"restrictedTo",couponCode))
         useUpRedemptions(redemptions,couponCode,finalPrice)
         .then(() => sleep(500))
@@ -269,6 +284,7 @@ function tests(browser){
         }
 
         page.gotoCouponsScreen()
+        // .then(() => sleep(1000))
         .then(() => page.createNewCoupon(name,experationDate['numerical'],"Retail","catigory","description",discount,dollars,"eachLineItem","minAmount",recurrence,redemptions,"restrictedTo",couponCode))
         // .then(() => page.visit('https://enroll.rev-prep.com/cart/tutor-packages'))
         .then(() => page.visit('https://admin.rev-prep.com/coupons'))
@@ -317,6 +333,7 @@ function tests(browser){
           var couponCode = page.makeCouponCode();
           var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
           page.gotoCouponsScreen()
+          // .then(() => sleep(1000))
           .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,restrictedTo,couponCode))
           startMembershipPurchaseApplyCoupon(couponCode)
           .then(() => sleep(500))
@@ -369,7 +386,7 @@ if(process.env.browser){
   var Browserss = [
     process.env.browser
   ];
-  // env KEY=YOUR_KEY mocha test/;
+  // env Browser=chrome mocha test/;
   // https://stackoverflow.com/questions/16144455/mocha-tests-with-extra-options-or-parameters
 }
 
