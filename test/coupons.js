@@ -42,7 +42,6 @@ function tests(browser){
 
     function gotoCouponsScreen(){
        var ret = page.clickElement('/html/body/ui-view/app/div/div/sidebar/nav/div/a[9]/span','xpath')
-      // .then(() => sleep(5000));
       return ret
     }
 
@@ -118,7 +117,6 @@ function tests(browser){
         var finalPrice = "$" + (198 - (multiplyer *(99 * (discount/100)))).toFixed(2)
       }else{
         var finalPrice = "$" + (198 - (multiplyer * discount))
-        // console.log("option 2 " + dollars + discount + eachLineItem)
       }
       return finalPrice
     }
@@ -164,18 +162,13 @@ function tests(browser){
     it('Coupons screen is accessable', function(){
       this.retries(trys)
       page.gotoCouponsScreen()
-    // .then(() => sleep(1000))
-      // .then(() => {
         var verificationText = page.getInnerHTML('body > ui-view > app > div > div > div > div > ui-view > coupons > div.my-4.d-flex.justify-content-between > h1');
-        verificationText.txt.should.eventually.equal('Coupons');
-      // })
-      
+        verificationText.txt.should.eventually.equal('Coupons');    
     })
 
     it('New Coupon modal is accessable', function(){
       this.retries(trys)
       page.gotoCouponsScreen()
-    // .then(() => sleep(1000))
       .then(page.clickElement('body > ui-view > app > div > div > div > div > ui-view > coupons > div.my-4.d-flex.justify-content-between > button'));
       var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > coupon-modal > div.modal-header > h2');
       verificationText.txt.should.eventually.equal('\n    New Coupon\n  ');
@@ -184,7 +177,6 @@ function tests(browser){
     it('Edit Coupon modal is accessable', function(){
       this.retries(trys)
       page.gotoCouponsScreen()
-    // .then(() => sleep(1000))
       .then(page.clickElement('body > ui-view > app > div > div > div > div > ui-view > coupons > table > tbody > tr:nth-child(1) > td.text-right > button'));
       var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > coupon-modal > div.modal-header > h2');
       verificationText.txt.should.eventually.equal('\n    Edit Coupon\n  ');
@@ -229,7 +221,6 @@ function tests(browser){
         var errorText = "\n          Coupon \'"+couponCode+"\' cannot be applied to this order\n        "
         var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
         page.gotoCouponsScreen()
-    // .then(() => sleep(1000))
         .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,"restrictedTo",couponCode))
         useUpRedemptions(redemptions,couponCode,finalPrice)
         .then(() => sleep(500))
@@ -284,7 +275,6 @@ function tests(browser){
         }
 
         page.gotoCouponsScreen()
-        // .then(() => sleep(1000))
         .then(() => page.createNewCoupon(name,experationDate['numerical'],"Retail","catigory","description",discount,dollars,"eachLineItem","minAmount",recurrence,redemptions,"restrictedTo",couponCode))
         // .then(() => page.visit('https://enroll.rev-prep.com/cart/tutor-packages'))
         .then(() => page.visit('https://admin.rev-prep.com/coupons'))
@@ -333,7 +323,6 @@ function tests(browser){
           var couponCode = page.makeCouponCode();
           var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
           page.gotoCouponsScreen()
-          // .then(() => sleep(1000))
           .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,restrictedTo,couponCode))
           startMembershipPurchaseApplyCoupon(couponCode)
           .then(() => sleep(500))
@@ -356,9 +345,7 @@ function tests(browser){
     // var restrictedToOptions = ["Boot Camp", "Membership", "Shipping"]
 
     function testMembershipWithRestrictedToOptions(){
-
       for (var i = restrictedToOptions.length - 1; i >= 0; i--) {
-
         if(restrictedToOptions[i] == "Any" || restrictedToOptions[i] == "Membership"){
           testRestrictedTo('Coupon IS applied to Membership purchase when restricted to ' + restrictedToOptions[i], (i+2), false, 99);
         }else{
