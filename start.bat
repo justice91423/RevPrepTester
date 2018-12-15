@@ -1,2 +1,2 @@
-cd /d E:\Tester\
-node  ./node_modules/mocha/bin/mocha ntest --reporter mochawesome
+cd /d E:\RevPrepTester\
+node  ./node_modules/mocha/bin/mocha test/coupons.js --reporter mochawesome

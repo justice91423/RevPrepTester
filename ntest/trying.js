@@ -1,7 +1,6 @@
 if(process.env.dev){
     // env dev=true mocha test/;
   Dev = process.env.dev;
-   console.log("This is running in Development Mode")
 }else{
   var Dev = false;
 }
@@ -14,6 +13,7 @@ var { describe, it , after, before} = require('selenium-webdriver/testing');
 var Page = require('../lib/admin_dashboard');
 var Page = require('../lib/admin_main_page');
 var Page = require('../lib/admin_dashboard_coupons');
+var Page = require('../lib/admin_dashboard_transactions_report');
 var Page = require('../lib/checkout_pages');
 var Page = require('../lib/student_home_page');
 var chai = require('chai');
@@ -51,8 +51,8 @@ for (var i = Browserss.length - 1; i >= 0; i--) {
 
 function tests(browser){
   describe('revprep app scenarios - '+browser, function(){
-    this.timeout(30000);
-    // this.timeout(120000);
+    // this.timeout(20000);
+    this.timeout(120000);
     beforeEach(function(){
       page = new Page(browser);
       page.driver.manage().window().setPosition(0, 0);
@@ -107,72 +107,63 @@ function tests(browser){
       return ret
     }
 
-    function useUpRedemptions(redemptions,couponCode,discountedPrice){
-      for (var i = redemptions; i > 0; i--) {
-        var ret = startPurchaseApplyCoupon(couponCode)
-        .then(() => page.readTotal())
-        .then((verificationText) => verificationText.txt.should.eventually.equal(discountedPrice))
-        .then(() => completePurchasefromCart())
-      }
-      return ret
-    }
 
-    function getFinalPrice(eachLineItem,discount,dollars){
-      var multiplyer = 1
-      if(eachLineItem){
-        multiplyer = 2
-      }
-      if(!dollars){
-        var finalPrice = "$" + (198 - (multiplyer *(99 * (discount/100)))).toFixed(2)
-      }else{
-        var finalPrice = "$" + (198 - (multiplyer * discount))
-      }
-      return finalPrice
-    }
+    it('refund search',  function(){
+      this.retries(trys)
+      var number = (Math.floor(Math.random() * 49) + 1);
+      page.clickReportsOption(1)
+      .then(() => page.clickAnOrder(number))
+      .then(() => sleep(5000))
+      
 
-    function getFinalPriceMembershipOnly(eachLineItem,discount,dollars){
-      var multiplyer = 1
-      if(eachLineItem){
-        multiplyer = 1
-      }
-      if(!dollars){
-        var finalPrice = "$" + (99 - (multiplyer *(99 * (discount/100)))).toFixed(2)
-      }else{
-        var finalPrice = "$" + (99 - (multiplyer * discount))
-      }
-      return finalPrice
-    }
+      // var ParentNameText = {};
 
-    function couponTest (name,discount,dollars,redemptions=0,eachLineItem=false){
-      it( name, function(){
-        this.retries(trys)
-        var experationDate = page.randomDate();
-        var couponCode = page.makeCouponCode();
-        var recurrence = 0;
-        var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
-        page.gotoCouponsScreen()
-        // .then(() => sleep(1000))
-        .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,"restrictedTo",couponCode))
-        .then(() => sleep(500))
-        .then(() => startPurchaseApplyCoupon(couponCode))
-        .then(() => sleep(200))
-        .then(() => page.readTotal())
-        .then(function(verificationText) { 
-          // var promise1 = Promise.resolve(verificationText.txt);
-          // promise1.then(function(promise1,) {
-            // verificationText.txt.should.eventually.equal(finalPrice, "The total equaled "+promise1+" instead of "+finalPrice)
-            verificationText.txt.should.eventually.equal(finalPrice, "The total did not equal "+finalPrice+" using coupon code "+couponCode)
-          // })
-        })
-      })
-    }
+      // for (var i = 11 - 1; i >= 0; i--) {
+      //   ParentNameText[i] = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/refund-requests/table/tbody/tr['+i+']/td[3]/a');
+      //   if(ParentNameText[i] == 'JaedenA KovacekA'){
+      //   var verificationText = page.find('/html/body/ui-view/app/div/div/div/div/ui-view/refund-requests/table/tbody/tr['+i+']/td[8]/button/i').click;
+      //   }
+      // }
+      .then(() => page.switchToNewTab())
+      // .then(() => {
 
-    // it('Coupons screen is accessable', function(){
-    //   this.retries(trys)
-    //   page.gotoCouponsScreen()
-    //     var verificationText = page.getInnerHTML('body > ui-view > app > div > div > div > div > ui-view > coupons > div.my-4.d-flex.justify-content-between > h1');
-    //     verificationText.txt.should.eventually.equal('Coupons');    
-    // })
+
+        
+      //   // var availableWindows = [1,2,3]
+      //   availableWindows.forEach(function(window) {
+      //       if (window != parent) {
+      //           newWindow = window;
+      //       }
+      //   })
+      //   if (newWindow != null) {
+      //       page.driver.switchTo().window(newWindow);
+      //   }
+
+      // })
+      // .then(() => page.clickNameOnOrder())
+      .then(() => sleep(5000))
+      .then(() => page.switchToPreviousTab())
+
+
+
+
+
+
+      // page.trying('/html/body/ui-view/app/div/div/div/div/ui-view/order-show/div/div[1]/h2/a[1]','xpath')
+      // .then((rett) => {
+      //   console.log("orderNumber thenned");
+
+
+      
+
+      // console.log("orderNumber = "+rett);
+      // })
+
+    })
+
+
+
+
 
     // it('New Coupon modal is accessable', function(){
     //   this.retries(trys)
@@ -289,82 +280,75 @@ function tests(browser){
     //     .then((verificationText) => verificationText.txt.should.eventually.equal(name))
     //   })
 
-      // it( "Coupons with Recurrence is applied to Membership", function(){
-      //   this.retries(trys)
-      //   var name  = "test " + page.makeCouponName()
-      //   var discount = 40;
-      //   var dollars  = true;
-      //   var redemptions  = false;
-      //   var recurrence  = 3;
-      //   var experationDate = page.randomDate();
-      //   var couponCode = page.makeCouponCode();
-      //   var eachLineItem = false;
-      //   var finalPrice = getFinalPriceMembershipOnly(false,discount,dollars);
-      //   var targetText = "Coupon: "+name+" ($"+discount+".00 off)\n            ";
+    //   it( "Coupons with Recurrence is applied to Membership", function(){
+    //     this.retries(trys)
+    //     var name  = "test " + page.makeCouponName()
+    //     var discount = 40;
+    //     var dollars  = true;
+    //     var redemptions  = false;
+    //     var recurrence  = 3;
+    //     var experationDate = page.randomDate();
+    //     var couponCode = page.makeCouponCode();
+    //     var eachLineItem = false;
+    //     var finalPrice = getFinalPriceMembershipOnly(false,discount,dollars);
+    //     var targetText = "Coupon: "+name+" ($"+discount+".00 off)\n            ";
 
-      //   page.gotoCouponsScreen()
-      //   .then(() => page.createNewCoupon(name,experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,"restrictedTo",couponCode))
-      //   .then(() => sleep(500))
-      //   .then(() => startPurchaseMembershipOnlyApplyCoupon(couponCode))
-      //   .then(() => page.readTotal())
-      //   .then((verificationText) => verificationText.txt.should.eventually.equal(finalPrice))
-      //   .then(() => completePurchasefromCart())
-      //   .then(() => page.dismissRingCentralModal())
-      //   .then(() => sleep(500))
-      //   .then(() => page.getAppliedCoupon())
-      //   .then((verificationText) => verificationText.txt.should.eventually.equal(targetText))
-      // })
+    //     page.gotoCouponsScreen()
+    //     .then(() => page.createNewCoupon(name,experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,"restrictedTo",couponCode))
+    //     .then(() => sleep(500))
+    //     .then(() => startPurchaseMembershipOnlyApplyCoupon(couponCode))
+    //     .then(() => page.readTotal())
+    //     .then((verificationText) => verificationText.txt.should.eventually.equal(finalPrice))
+    //     .then(() => completePurchasefromCart())
+    //     .then(() => page.dismissRingCentralModal())
+    //     .then(() => sleep(500))
+    //     .then(() => page.getAppliedCoupon())
+    //     .then((verificationText) => verificationText.txt.should.eventually.equal(targetText))
+    //   })
 
-      function testRestrictedTo (name,restrictedTo,apply,price){
-        // console.log("testRestrictedTo restrictedTo1 "+restrictedTo)
-        it( name, function(){
-          this.retries(trys)
-          var couponName = 'test_'+( page.randomString(10,"alpha"));
-          var discount = 40;
-          var dollars  = true;
-          var eachLineItem  = false;
-          var recurrence = false;
-          var redemptions  = 2;
-          var experationDate = page.randomDate();
-          var couponCode = page.makeCouponCode();
-          var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
-          page.gotoCouponsScreen()
-          .then(() => page.createNewCoupon(couponName,experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,restrictedTo,couponCode))
-          .then(() => startMembershipPurchaseApplyCoupon(couponCode))
-          .then(() => sleep(500))
-          .then(() => {
-            if(!apply){
-              var errorText = "\n          Coupon \'"+couponCode+"\' cannot be applied to this order\n        "
-              sleep(100)
-              .then(() => {
-                var readErrorVerificationText = page.readError()
-                readErrorVerificationText.txt.should.eventually.equal(errorText)
-              })
-            }else{
-              sleep(100)
-              .then(() => {
-                var readTotalVerificationText = page.readTotal()
-                readTotalVerificationText.txt.should.eventually.equal("$"+price)
-              })
-            }
-          })
-        })
-      }
+    //   function testRestrictedTo (name,restrictedTo,apply,price){
+    //     it( name, function(){
+    //       this.retries(trys)
+    //       var discount = 40;
+    //       var dollars  = true;
+    //       var eachLineItem  = false;
+    //       var recurrence = false;
+    //       var redemptions  = 2;
+    //       var experationDate = page.randomDate();
+    //       var couponCode = page.makeCouponCode();
+    //       var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
+    //       page.gotoCouponsScreen()
+    //       .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,restrictedTo,couponCode))
+    //       startMembershipPurchaseApplyCoupon(couponCode)
+    //       .then(() => sleep(500))
+    //       .then(() => {
+    //         if(!apply){
+    //           var errorText = "\n          Coupon \'"+couponCode+"\' cannot be applied to this order\n        "
+    //           sleep(100)
+    //           .then(() => page.readError())
+    //           .then((readErrorVerificationText) => readErrorVerificationText.txt.should.eventually.equal(errorText))
+    //         }else{
+    //           sleep(100)
+    //           .then(() => page.readTotal())
+    //           .then((readTotalVerificationText) => readTotalVerificationText.txt.should.eventually.equal("$"+price))
+    //         }
+    //       })
+    //     })
+    //   }
 
     // var restrictedToOptions = ["Any","Material","Shipping","Tutor Package" ,"Private Tutoring" ,"Semi-Private Tutoring" ,"Special Event" ,"Membership" ,"Group Course" ,"Small Group Course" ,"Value Group Course" ,"Collegewise" ,"Test Prep 101" ,"Independent College Counseling","Executive Functioning" ,"Homework Help" ,"Boot Camp" ,"GMAT" ,"Group Meetings" ,"1-on-1 Meetings" ,"Fee" ,"Workshop" ,"A+ Habits"]
-    var restrictedToOptions = ["Boot Camp", "Membership", "Shipping"]
-    // var restrictedToOptions = ["Shipping"]
+    // // var restrictedToOptions = ["Boot Camp", "Membership", "Shipping"]
 
-    function testMembershipWithRestrictedToOptions(){
-      for (var i = restrictedToOptions.length - 1; i >= 0; i--) {
-        if(restrictedToOptions[i] == "Any" || restrictedToOptions[i] == "Membership"){
-          testRestrictedTo('Coupon IS applied to Membership purchase when restricted to ' + restrictedToOptions[i], restrictedToOptions[i], false, 99);
-        }else{
-          testRestrictedTo('Coupon is NOT applied to Membership purchase when restricted to ' + restrictedToOptions[i], restrictedToOptions[i], true, 99);
-        }
-      }
-    }
-    testMembershipWithRestrictedToOptions();
+    // function testMembershipWithRestrictedToOptions(){
+    //   for (var i = restrictedToOptions.length - 1; i >= 0; i--) {
+    //     if(restrictedToOptions[i] == "Any" || restrictedToOptions[i] == "Membership"){
+    //       testRestrictedTo('Coupon IS applied to Membership purchase when restricted to ' + restrictedToOptions[i], (i+2), false, 99);
+    //     }else{
+    //       testRestrictedTo('Coupon is NOT applied to Membership purchase when restricted to ' + restrictedToOptions[i], (i+2), true, 99);
+    //     }
+    //   }
+    // }
+    // testMembershipWithRestrictedToOptions();
   });
 }
 

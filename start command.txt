@@ -1,0 +1,1 @@
+env browser=chrome dev=true mocha test --reporter mochawsome
