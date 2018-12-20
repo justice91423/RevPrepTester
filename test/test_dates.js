@@ -1,4 +1,10 @@
-var Dev = false
+if(process.env.dev){
+    // env dev=true mocha test/;
+  Dev = process.env.dev;
+   console.log("This test suite is running in Development Mode")
+}else{
+  var Dev = false;
+}
 var webdriver = require('selenium-webdriver'),
     By = webdriver.By,
     assert =require('assert'),
@@ -17,9 +23,31 @@ var trys = 2
 if(Dev){
   var trys = 0
 }
+var Browserss = [
+  // 'internet explorer',
+  'firefox',
+  'chrome'
+  ];
+
+if(Dev){
+  var Browserss = [
+  'chrome'
+  ];
+}
+
+if(process.env.browser){
+  var Browserss = [
+    process.env.browser
+  ];
+  // env browser=chrome mocha test/;
+  // https://stackoverflow.com/questions/16144455/mocha-tests-with-extra-options-or-parameters
+}
+for (var i = Browserss.length - 1; i >= 0; i--) {
+  tests(Browserss[i])
+};
 
 function tests(browser){
-  describe('revprep app scenarios - '+browser, function(){
+  describe('Test Date scenarios - '+browser, function(){
     this.timeout(30000);
     beforeEach(function(){
       page = new Page(browser);
@@ -42,33 +70,33 @@ function tests(browser){
 
     }
 
-    it('Test Dates screen is accessable', function(){
+    it('Test Dates screen is accessible', function(done){
       this.retries(trys)
       gotoTestDatesScreen();
       var verificationText = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/test-dates/div/div[1]/h1','xpath');
-      verificationText.txt.should.eventually.equal('Test Dates');
+      verificationText.txt.should.eventually.equal('Test Dates').notify(done);
     })
 
-    it('Edit Test Date modal is accessable', function(){
+    it('Edit Test Date modal is accessible', function(done){
       this.retries(trys)
       gotoTestDatesScreen()
       .then(page.clickElement('/html/body/ui-view/app/div/div/div/div/ui-view/test-dates/div/div[2]/table/tbody/tr[1]/td[4]/button', 'xpath'));
       var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/test-date-edit-modal/div[1]/h2', 'xpath');
-      verificationText.txt.should.eventually.equal('\n    Edit\n    Test Date\n  ');
+      verificationText.txt.should.eventually.equal('\n    Edit\n    Test Date\n  ').notify(done);
     })
 
-    it('Add Test Date modal is accessable', function(){
+    it('Add Test Date modal is accessible', function(done){
       this.retries(trys)
       gotoTestDatesScreen()
 
       .then(page.clickElement('/html/body/ui-view/app/div/div/div/div/ui-view/test-dates/div/div[1]/button', 'xpath'));
       var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/test-date-edit-modal/div[1]/h2', 'xpath');
-      verificationText.txt.should.eventually.equal('\n    Add\n    Test Date\n  ');
+      verificationText.txt.should.eventually.equal('\n    Add\n    Test Date\n  ').notify(done);
     })
 
     var testDate = {};
 
-    it('New test date can be created', function(){
+    it('New test date can be created', function(done){
       this.retries(trys)
       testDate = page.randomDate();
       gotoTestDatesScreen()
@@ -80,10 +108,10 @@ function tests(browser){
       .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[2]/form/div[2]/div/select/optgroup[1]/option[1]',"xpath"))
       .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[3]/button','xpath'))
       var verificationText = page.getInnerHTML('#toast-container > div > div > div > div.toast-title');
-      verificationText.txt.should.eventually.equal('Success');
+      verificationText.txt.should.eventually.equal('Success').notify(done);
     })
 
-    it('Test date can be edited', function(){
+    it('Test date can be edited', function(done){
       this.retries(trys)
       testDate = page.randomDate();
       gotoTestDatesScreen()
@@ -95,10 +123,10 @@ function tests(browser){
       .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[2]/form/div[2]/div/select/optgroup[1]/option[2]',"xpath"))
       .then(page.clickElement('/html/body/div[1]/div/div/test-date-edit-modal/div[3]/button[2]','xpath'))
       var verificationText = page.getInnerHTML('#toast-container > div > div > div > div.toast-title');
-      verificationText.txt.should.eventually.equal('Success');
+      verificationText.txt.should.eventually.equal('Success').notify(done);
     })
 
-    it('test date can be deleted', function(){
+    it('test date can be deleted', function(done){
       this.retries(trys)
       
       gotoTestDatesScreen()
@@ -112,31 +140,8 @@ function tests(browser){
       .then(page.acceptAlert())
 
       var verificationText2 = page.getInnerHTML('#toast-container > div > div > div > div.toast-title');
-      verificationText2.txt.should.eventually.equal('Success');
+      verificationText2.txt.should.eventually.equal('Success').notify(done);
     })
   });
 }
 
-var Browserss = [
-  'internet explorer',
-  'firefox',
-  'chrome'
-  ];
-
-if(Dev){
-  var Browserss = [
-  'chrome'
-  ];
-}
-
-if(process.env.browser){
-  var Browserss = [
-    process.env.browser
-  ];
-  // env KEY=YOUR_KEY mocha test/;
-  // https://stackoverflow.com/questions/16144455/mocha-tests-with-extra-options-or-parameters
-}
-
-for (var i = Browserss.length - 1; i >= 0; i--) {
-  tests(Browserss[i])
-};
