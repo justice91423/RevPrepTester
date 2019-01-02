@@ -24,8 +24,6 @@ var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var should = chai.should();
 var page;
-var sourceFile = require('../lib/credentials.js');
-var credentials = sourceFile.credentials;
 chai.use(chaiAsPromised);
 var trys = 2
 if(Dev){
