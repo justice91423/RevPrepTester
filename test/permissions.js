@@ -18,6 +18,12 @@ var Page = require('../lib/student_home_page');
 var Page = require('../lib/admin_employee');
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
+var sourceFile_credentials = require('../lib/credentials.js');
+var credentials = sourceFile_credentials.credentials_a;
+var username = credentials['wonka_tester']['username']
+var password = credentials['wonka_tester']['password']
+var permissions_tester_username = credentials['permissions_tester']['username']
+var permissions_tester_password = credentials['permissions_tester']['password']
 var should = chai.should();
 var page;
 chai.use(chaiAsPromised);
@@ -86,7 +92,7 @@ function tests(browser){
     function navbarItemTest(name,singleItems,sectionsAndItems,optionNumber){
       it('Set '+name+' as the users Title', function(done){
         this.retries(trys)
-        page.loginAdmin('justice.sommer@revolutionprep.com','revprep123')
+        page.loginAdmin(username,password)
         .then(() => setTitle(optionNumber))
 
         var titleSelected = page.checkTitleFromEditEmployeeModal(optionNumber)
@@ -94,7 +100,7 @@ function tests(browser){
       });
       it(name+' role provides correct Navbar items', function(done){
         this.retries(trys)
-        page.loginAdmin('permissions@permissions.com','revprep123')
+        page.loginAdmin(permissions_tester_username,permissions_tester_password)
         var itemCounter = 3;
         var singleItemsVerificationTexts={};
         for (var i = singleItems.length - 1; i >= 0; i--) {

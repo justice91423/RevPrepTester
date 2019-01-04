@@ -16,6 +16,10 @@ var Page = require('../lib/base_page');
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var should = chai.should();
+var sourceFile_credentials = require('../lib/credentials.js');
+var credentials = sourceFile_credentials.credentials_a;
+var username = credentials['wonka_tester']['username']
+var password = credentials['wonka_tester']['password']
 var page;
 chai.use(chaiAsPromised);
 var trys = 2
@@ -62,26 +66,34 @@ function tests(browser){
 
     it('User can login with correct username and password', function(done){
       this.retries(trys)
-      var un = page.enterUsername('justice.sommer@revolutionprep.com');
-      var pw = page.enterPassword('revprep123');
+      var un = page.enterUsername(username);
+      var pw = page.enterPassword(password);
       page.clicklogin();
-      un.val.should.eventually.equal('justice.sommer@revolutionprep.com', 'The username was never entered into the username field');
+      un.val.should.eventually.equal(username, 'The username was never entered into the username field');
       var loggedIn = page.homeText()
-      loggedIn.typ.should.eventually.equal('Home', 'The user was not loggged in').notify(done);
+      loggedIn.typ.should.eventually.equal('Home', 'The user was not logged in').notify(done);
     })
 
-    it('User can NOT login with incorrect username and password', function(done){
+    it('User can NOT login with incorrect username', function(done){
       this.retries(trys)
-      var un = page.enterUsername('NOTjustice.sommer@revolutionprep.com');
-      var pw = page.enterPassword('revprep123');
+      var un = page.enterUsername('NOT' + username);
+      var pw = page.enterPassword(password);
+      page.clicklogin();
+      var toastText = page.readToast();
+      toastText.txt.should.eventually.equal('Invalid Login or password.', 'The propper error toast did not appear').notify(done);
+    })
+    it('User can NOT login with incorrect password', function(done){
+      this.retries(trys)
+      var un = page.enterUsername(username);
+      var pw = page.enterPassword("incorrect password*&##");
       page.clicklogin();
       var toastText = page.readToast();
       toastText.txt.should.eventually.equal('Invalid Login or password.', 'The propper error toast did not appear').notify(done);
     })
     it('User can NOT login with blank username and password', function(done){
       this.retries(trys)
-      var un = page.enterUsername('NOTjustice.sommer@revolutionprep.com');
-      var pw = page.enterPassword('revprep123');
+      // var un = page.enterUsername('NOTjustice.sommer@revolutionprep.com');
+      // var pw = page.enterPassword('revprep123');
       page.clicklogin();
       var toastText = page.readToast();
       toastText.txt.should.eventually.equal('Invalid Login or password.', 'The propper error toast did not appear').notify(done);

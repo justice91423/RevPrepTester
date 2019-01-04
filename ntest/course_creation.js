@@ -16,13 +16,17 @@ var Page = require('../lib/admin_dashboard');
 var Page = require('../lib/admin_dashboard_new_lead_modal');
 var Page = require('../lib/admin_dashboard_new_school_modal');
 var Page = require('../lib/admin_dashboard_new_lead_source_modal');
-var Page = require('../lib/admin_dashboard_CRM');
+var Page = require('../lib/admin_dashboard_add_small_group_course_modal');
 var Page = require('../lib/admin_dashboard_advisor_leads');
 var Page = require('../lib/admin_dashboard_advisor_lead_sources');
-var Page = require('../lib/student_home_page');
+var Page = require('../lib/admin_dashboard_course_search');
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var should = chai.should();
+var sourceFile_credentials = require('../lib/credentials.js');
+var credentials = sourceFile_credentials.credentials_a;
+var username = credentials['wonka_tester']['username']
+var password = credentials['wonka_tester']['password']
 var page;
 chai.use(chaiAsPromised);
 var trys = 2
@@ -32,7 +36,7 @@ if(Dev){
 
 var Browserss = [
   // 'internet explorer',
-  // 'firefox',
+  'firefox',
   'chrome'
   ];
 
@@ -41,12 +45,11 @@ if(Dev){
   'chrome'
   ];
 }
-var Build = ""
-var BuildName = "(no build specified)"
-if(process.env.build){
-  DesiredBuild = process.env.build;
-  BuildName = DesiredBuild;
 
+if(process.env.browser){
+  var Browserss = [
+    process.env.browser
+  ];
   // env KEY=YOUR_KEY mocha test/;
   // https://stackoverflow.com/questions/16144455/mocha-tests-with-extra-options-or-parameters
 }
@@ -58,12 +61,12 @@ for (var i = Browserss.length - 1; i >= 0; i--) {
 
 
 function tests(browser){
-  describe('Build', function(){
+  describe('Course creation', function(){
     // this.timeout(20000);
     if(browser=='internet explorer'){
-      this.timeout(60000);
+      this.timeout(90000);
     }else{
-      this.timeout(30000);
+      this.timeout(45000);
     }
     
     beforeEach(function(){
@@ -71,7 +74,7 @@ function tests(browser){
       page.driver.manage().window().setPosition(0, 0);
       page.driver.manage().window().setSize(1600,1080);
       page.visit('https://admin.rev-prep.com/login');
-      // page.loginAdmin('justice.sommer@revolutionprep.com','revprep123')
+      page.loginAdmin(username,password)
       .then(() => sleep(5000))
     });
     afterEach(function(){
@@ -81,14 +84,36 @@ function tests(browser){
       page.quit();
     });
 
-    it('Current build is '+BuildName, function(done){
+    // it('Course Search screen is accessible', function(done){
+    //   this.retries(trys)
+    //   page.clickNavBarItem( false,4,1)
+
+    //   var verificationText = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/ui-view/courses/div[1]/h1','xpath');
+    //   verificationText.txt.should.eventually.equal('Course Searchh', "Could not reach Course Search screen").notify(done);
+    // });
+
+    // it('Add Small Group Course modal is accessible', function(done){
+    //   this.retries(trys)
+    //   page.clickNavBarItem( false,4,1)
+    //   .then(() => sleep(2000))
+    //   .then(() => page.clickNewCourseButton(13))
+    //   .then(() => sleep(1000))
+    //   .then(() => {
+    //     var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/courses-edit-modal/div[1]/h2','xpath');
+    //     verificationText.txt.should.eventually.include('Small Group Course', "Could not reach Small Group Course Modal").notify(done);
+    //   })
+    // });
+
+    it('Create Small Group Course', function(done){
       this.retries(trys)
-      var currentBuild = page.find('/html/body/ng-include/div','xpath').getText()
-
-      
-
-      // var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[1]/div/h4/span[1]','xpath');
-      currentBuild.should.eventually.include(Build, "The current build is not "+BuildName).notify(done);
+      page.clickNavBarItem( false,4,1)
+      .then(() => sleep(2000))
+      .then(() => page.clickNewCourseButton(13))
+      .then(() => sleep(1000))
+      .then(() => {page.fillAddSmallGroupCourseModal(45,3,89,"these are some notes","Wilkins",true,"GMAT","Test Purchase Material","2019 - Apr 13 ACT","Blue",true,true)
+        // var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/courses-edit-modal/div[1]/h2','xpath');
+        // verificationText.txt.should.eventually.include('Small Group Course', "Could not reach Small Group Course Modal").notify(done);
+      })
     });
 
     // it('Create a lead and search for it', function(done){

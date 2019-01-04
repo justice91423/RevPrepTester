@@ -19,6 +19,10 @@ var Page = require('../lib/student_home_page');
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var should = chai.should();
+var sourceFile_credentials = require('../lib/credentials.js');
+var credentials = sourceFile_credentials.credentials_a;
+var username = credentials['wonka_tester']['username']
+var password = credentials['wonka_tester']['password']
 var page;
 chai.use(chaiAsPromised);
 
@@ -58,7 +62,7 @@ function tests(browser){
       page.driver.manage().window().setPosition(0, 0);
       page.driver.manage().window().setSize(1600,1080);
       page.visit('https://admin.rev-prep.com/login');
-      page.loginAdmin('justice.sommer@revolutionprep.com','revprep123')
+      page.loginAdmin(username,password)
       // page.dismissRingCentralModal()
       .then(() => sleep(1000));
     });
@@ -192,14 +196,14 @@ function tests(browser){
       return text;
     }
 
-    it('Coupons screen is accessable', function(done){
+    it('Coupons screen is accessible', function(done){
       this.retries(trys)
       page.gotoCouponsScreen()
         var verificationText = page.getInnerHTML('body > ui-view > app > div > div > div > div > ui-view > coupons > div.my-4.d-flex.justify-content-between > h1');
         verificationText.txt.should.eventually.equal('Coupons').notify(done);    
     })
 
-    it('New Coupon modal is accessable', function(done){
+    it('New Coupon modal is accessible', function(done){
       this.retries(trys)
       page.gotoCouponsScreen()
       .then(() => page.clickNewCouponButton())
@@ -207,7 +211,7 @@ function tests(browser){
       verificationText.txt.should.eventually.equal('\n    New Coupon\n  ').notify(done);
     })
 
-    it('Edit Coupon modal is accessable', function(done){
+    it('Edit Coupon modal is accessible', function(done){
       this.retries(trys)
       page.gotoCouponsScreen()
       .then(() => page.clickEditCouponButton())

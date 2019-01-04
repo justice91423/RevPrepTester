@@ -24,8 +24,10 @@ var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var should = chai.should();
 var page;
-var sourceFile = require('../lib/credentials.js');
-var credentials = sourceFile.credentials;
+var sourceFile_credentials = require('../lib/credentials.js');
+var credentials = sourceFile_credentials.credentials_a;
+var username = credentials['wonka_tester']['username']
+var password = credentials['wonka_tester']['password']
 chai.use(chaiAsPromised);
 var trys = 2
 if(Dev){
@@ -85,7 +87,7 @@ function tests(browser){
       page.driver.manage().window().setPosition(0, 0);
       page.driver.manage().window().setSize(1600,1080);
       page.visit('https://admin.rev-prep.com/login');
-      page.loginAdmin('justice.sommer@revolutionprep.com','revprep123')
+      page.loginAdmin(username,password)
       .then(() => sleep(5000))
     });
     afterEach(function(){
@@ -95,10 +97,12 @@ function tests(browser){
       page.quit();
     });
 
+
     it('Create a lead', function(done){
       this.retries(trys)
       var firstName = page.randomString(10,"alpha");
       var lastName = page.randomString(10,"alpha");
+      // var build = page.getBuild()
 
       page.clickCreateOption(1)
       .then(() => page.fillNewLead(firstName,lastName))
