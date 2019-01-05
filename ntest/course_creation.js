@@ -13,8 +13,8 @@ var webdriver = require('selenium-webdriver'),
 var sleep = require('sleep-promise');
 var { describe, it , after, before} = require('selenium-webdriver/testing');
 var Page = require('../lib/admin_dashboard');
-var Page = require('../lib/admin_dashboard_new_lead_modal');
-var Page = require('../lib/admin_dashboard_new_school_modal');
+var Page = require('../lib/admin_session_editor_modal');
+var Page = require('../lib/admin_dashboard_course');
 var Page = require('../lib/admin_dashboard_new_lead_source_modal');
 var Page = require('../lib/admin_dashboard_add_small_group_course_modal');
 var Page = require('../lib/admin_dashboard_advisor_leads');
@@ -104,16 +104,69 @@ function tests(browser){
     //   })
     // });
 
-    it('Create Small Group Course', function(done){
+    // it('Create a Small Group Course', function(done){
+    //   this.retries(trys)
+    //   var coursePerams = {
+    //     price:45,
+    //     enrollmentCap:3,
+    //     discountPrice:89,
+    //     note:"these are some notes",
+    //     leadSource:"Wilkins",
+    //     dynamicSubject:false,
+    //     subject:"GMAT",
+    //     material:"Test Purchase Material",
+    //     testDate:"2019 - Apr 13 ACT",
+    //     segment:"Blue",
+    //     grantManualAttendance:false,
+    //     thirdParty:false
+    //   }
+    //   page.clickNavBarItem( false,4,1)
+    //   .then(() => sleep(2000))
+    //   .then(() => page.clickNewCourseButton(13))
+    //   .then(() => sleep(1000))
+    //   .then(() => page.fillAddSmallGroupCourseModal(coursePerams))
+    //   .then(() => page.clickCreateButtonAddSmallGroupCourseModal())
+    //     var verificationText = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/ui-view/div[1]/div/div[1]/section/div[1]/h2/span','xpath');
+    //     verificationText.txt.should.eventually.equal(coursePerams["subject"]+" "+coursePerams["segment"]+" "+"Small Group Course", "Could not create Small Group Course").notify(done); 
+    // });
+
+    it('Add a session', function(done){
       this.retries(trys)
+      var coursePerams = {
+        price:45,
+        enrollmentCap:3,
+        discountPrice:89,
+        note:"these are some notes",
+        leadSource:"Wilkins",
+        dynamicSubject:false,
+        subject:"GMAT",
+        material:"Test Purchase Material",
+        testDate:"2019 - Apr 13 ACT",
+        segment:"Blue",
+        grantManualAttendance:false,
+        thirdParty:false
+      }
+      var sessionsPerams = {
+        type:"Online Exam",
+        date:"01/25/2019",
+        time:"7:45pm",
+        duration:90,
+        tutorsRequired:1,
+        repeat:1
+      }
       page.clickNavBarItem( false,4,1)
       .then(() => sleep(2000))
       .then(() => page.clickNewCourseButton(13))
       .then(() => sleep(1000))
-      .then(() => {page.fillAddSmallGroupCourseModal(45,3,89,"these are some notes","Wilkins",true,"GMAT","Test Purchase Material","2019 - Apr 13 ACT","Blue",true,true)
-        // var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/courses-edit-modal/div[1]/h2','xpath');
-        // verificationText.txt.should.eventually.include('Small Group Course', "Could not reach Small Group Course Modal").notify(done);
-      })
+      .then(() => page.fillAddSmallGroupCourseModal(coursePerams))
+      .then(() => page.clickCreateButtonAddSmallGroupCourseModal())
+      .then(() => page.clickAddSessionsButton())
+      .then(() => page.fillSessionEditorModal(sessionsPerams))
+      .then(() => page.clickAddSessionsButtonSessionEditorModal())
+      .then(() => page.clickSaveButtonSessionEditorModal())
+
+        var verificationText = page.getInnerHTML('//*[@id="sessions_list"]/tbody/tr/td[2]/div','xpath');
+        verificationText.txt.should.eventually.include(coursePerams["subject"]+" "+sessionsPerams["type"].split(" ")[sessionsPerams["type"].split(" ").length-1], "Could not add session").notify(done); 
     });
 
     // it('Create a lead and search for it', function(done){
