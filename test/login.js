@@ -1,6 +1,6 @@
 if(process.env.dev=="true"){
     // env dev=true mocha test/;
-  Dev = process.env.dev;
+  Dev = true;
    console.log("This test suite is running in Development Mode")
 }else{
   var Dev = false;
@@ -101,27 +101,4 @@ function tests(browser){
   });
 }
 
-var Browserss = [
-  'internet explorer',
-  'firefox',
-  'chrome'
-  ];
-
-if(Dev){
-  var Browserss = [
-  'chrome'
-  ];
-}
-
-if(process.env.browser){
-  var Browserss = [
-    process.env.browser
-  ];
-  // env KEY=YOUR_KEY mocha test/;
-  // https://stackoverflow.com/questions/16144455/mocha-tests-with-extra-options-or-parameters
-}
-
-for (var i = Browserss.length - 1; i >= 0; i--) {
-  tests(Browserss[i])
-};
 
