@@ -9,7 +9,7 @@ var webdriver = require('selenium-webdriver'),
     By = webdriver.By,
     assert =require('assert'),
     until = webdriver.until;
-
+var sleep = require('sleep-promise');
 var { describe, it , after, before} = require('selenium-webdriver/testing');
 var Page = require('../lib/login_enroll_page');
 var Page = require('../lib/base_page');
