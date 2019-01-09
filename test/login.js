@@ -86,7 +86,8 @@ function tests(browser){
       this.retries(trys)
       // var un = page.enterUsername('NOTjustice.sommer@revolutionprep.com');
       // var pw = page.enterPassword('revprep123');
-      page.clicklogin();
+      sleep(2000)
+      .then(() => page.clicklogin())
       var toastText = page.readToast();
       toastText.txt.should.eventually.equal('Invalid Login or password.', 'The proper error toast did not appear').notify(done);
     })
