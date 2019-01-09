@@ -69,7 +69,7 @@ function tests(browser){
       var un = page.enterUsername(username);
       var pw = page.enterPassword(password);
       page.clicklogin();
-      un.val.should.eventually.equal(username, 'The username was never entered into the username field');
+      un.val.should.eventually.equal(username, 'The username was never entered into the Username field');
       var loggedIn = page.homeText()
       loggedIn.typ.should.eventually.equal('Home', 'The user was not logged in').notify(done);
     })
@@ -80,7 +80,7 @@ function tests(browser){
       var pw = page.enterPassword(password);
       page.clicklogin();
       var toastText = page.readToast();
-      toastText.txt.should.eventually.equal('Invalid Login or password.', 'The propper error toast did not appear').notify(done);
+      toastText.txt.should.eventually.equal('Invalid Login or password.', 'The proper error toast did not appear').notify(done);
     })
     it('User can NOT login with incorrect password', function(done){
       this.retries(trys)
@@ -88,7 +88,7 @@ function tests(browser){
       var pw = page.enterPassword("incorrect password*&##");
       page.clicklogin();
       var toastText = page.readToast();
-      toastText.txt.should.eventually.equal('Invalid Login or password.', 'The propper error toast did not appear').notify(done);
+      toastText.txt.should.eventually.equal('Invalid Login or password.', 'The proper error toast did not appear').notify(done);
     })
     it('User can NOT login with blank username and password', function(done){
       this.retries(trys)
@@ -96,7 +96,7 @@ function tests(browser){
       // var pw = page.enterPassword('revprep123');
       page.clicklogin();
       var toastText = page.readToast();
-      toastText.txt.should.eventually.equal('Invalid Login or password.', 'The propper error toast did not appear').notify(done);
+      toastText.txt.should.eventually.equal('Invalid Login or password.', 'The proper error toast did not appear').notify(done);
     })
   });
 }
