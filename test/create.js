@@ -46,7 +46,7 @@ if(Dev){
   ];
 }
 
-if(process.env.browser){
+if(process.env.browser && process.env.browser != "all"){
   var Browserss = [
     process.env.browser
   ];
