@@ -96,7 +96,7 @@ function tests(browser){
       // var pw = page.enterPassword('revprep123');
       page.clicklogin();
       var toastText = page.readToast();
-      toastText.txt.should.eventually.equal('Invalid Login or password.', 'The proper error toast did not appear').notify(done);
+      toastText.txt.should.eventually.equal('Invalid Login or password.', 'The proper error toast did not appear');
     })
   });
 }
