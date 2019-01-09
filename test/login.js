@@ -82,6 +82,14 @@ function tests(browser){
       var toastText = page.readToast();
       toastText.txt.should.eventually.equal('Invalid Login or password.', 'The proper error toast did not appear').notify(done);
     })
+    it('User can NOT login with blank username and password', function(done){
+      this.retries(trys)
+      // var un = page.enterUsername('NOTjustice.sommer@revolutionprep.com');
+      // var pw = page.enterPassword('revprep123');
+      page.clicklogin();
+      var toastText = page.readToast();
+      toastText.txt.should.eventually.equal('Invalid Login or password.', 'The proper error toast did not appear').notify(done);
+    })
     it('User can NOT login with incorrect password', function(done){
       this.retries(trys)
       var un = page.enterUsername(username);
@@ -90,14 +98,7 @@ function tests(browser){
       var toastText = page.readToast();
       toastText.txt.should.eventually.equal('Invalid Login or password.', 'The proper error toast did not appear').notify(done);
     })
-    it('User can NOT login with blank username and password', function(done){
-      this.retries(trys)
-      // var un = page.enterUsername('NOTjustice.sommer@revolutionprep.com');
-      // var pw = page.enterPassword('revprep123');
-      page.clicklogin();
-      var toastText = page.readToast();
-      toastText.txt.should.eventually.equal('Invalid Login or password.', 'The proper error toast did not appear');
-    })
+   
   });
 }
 
