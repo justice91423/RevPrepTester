@@ -1,17 +1,19 @@
-if(process.env.dev){
-    // env dev=true mocha test/;
-  Dev = process.env.dev;
-   console.log("This test suite is running in Development Mode")
-}else{
-  var Dev = false;
-}
 
-var webdriver = require('selenium-webdriver'),
-    By = webdriver.By,
-    assert =require('assert'),
-    until = webdriver.until;
-var sleep = require('sleep-promise');
-var { describe, it , after, before} = require('selenium-webdriver/testing');
+var {Dev,trys,Browserss,webdriver,sleep,describe,it,after,before,chai,chaiAsPromised,should,sourceFile_credentials} = require('../lib/top')
+// if(process.env.dev){
+//     // env dev=true mocha test/;
+//   Dev = process.env.dev;
+//    console.log("This test suite is running in Development Mode")
+// }else{
+//   var Dev = false;
+// }
+
+// var webdriver = require('selenium-webdriver'),
+//     By = webdriver.By,
+//     assert =require('assert'),
+//     until = webdriver.until;
+// var sleep = require('sleep-promise');
+// var { describe, it , after, before} = require('selenium-webdriver/testing');
 var Page = require('../lib/admin_dashboard');
 var Page = require('../lib/admin_dashboard_new_lead_modal');
 var Page = require('../lib/admin_dashboard_new_school_modal');
@@ -20,39 +22,33 @@ var Page = require('../lib/admin_dashboard_CRM');
 var Page = require('../lib/admin_dashboard_advisor_leads');
 var Page = require('../lib/admin_dashboard_advisor_lead_sources');
 var Page = require('../lib/student_home_page');
-var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-var should = chai.should();
-var page;
-var sourceFile_credentials = require('../lib/credentials.js');
-var credentials = sourceFile_credentials.credentials_a;
-var username = credentials['wonka_tester']['username']
-var password = credentials['wonka_tester']['password']
+// var chai = require('chai');
+// var chaiAsPromised = require('chai-as-promised');
+// var should = chai.should();
+// var page;
+// var sourceFile_credentials = require('../lib/credentials.js');
+// var credentials = sourceFile_credentials.credentials_a;
+var username = sourceFile_credentials.credentials_a['wonka_tester']['username']
+var password = sourceFile_credentials.credentials_a['wonka_tester']['password']
 chai.use(chaiAsPromised);
-var trys = 2
-if(Dev){
-  var trys = 0
-}
+// var trys = 2
+// if(Dev){
+//   var trys = 0
+// }
 
-var Browserss = [
-  // 'internet explorer',
-  'firefox',
-  'chrome'
-  ];
+// var Browserss = [
+//   // 'internet explorer',
+//   'firefox',
+//   'chrome'
+//   ];
 
-if(Dev){
-  var Browserss = [
-  'chrome'
-  ];
-}
+// if(Dev){
+//   var Browserss = [
+//   'chrome'
+//   ];
+// }
 
-if(process.env.browser && process.env.browser != "all"){
-  var Browserss = [
-    process.env.browser
-  ];
-  // env KEY=YOUR_KEY mocha test/;
-  // https://stackoverflow.com/questions/16144455/mocha-tests-with-extra-options-or-parameters
-}
+
 
 for (var i = Browserss.length - 1; i >= 0; i--) {
   tests(Browserss[i])

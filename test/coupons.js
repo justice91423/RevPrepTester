@@ -55,7 +55,7 @@ for (var i = Browserss.length - 1; i >= 0; i--) {
 
 function tests(browser){
   describe('Coupon scenarios - '+browser, function(){
-    this.timeout(30000);
+    this.timeout(45000);
     // this.timeout(120000);
     beforeEach(function(){
       page = new Page(browser);

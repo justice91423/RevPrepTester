@@ -1,58 +1,69 @@
-if(process.env.dev){
-    // env dev=true mocha test/;
-  Dev = process.env.dev;
-   console.log("This test suite is running in Development Mode")
-}else{
-  var Dev = false;
-}
+var {Dev,trys,Browserss,webdriver,sleep,describe,it,after,before,chai,chaiAsPromised,should,sourceFile_credentials} = require('../lib/top')
 
-var webdriver = require('selenium-webdriver'),
-    By = webdriver.By,
-    assert =require('assert'),
-    until = webdriver.until;
-var sleep = require('sleep-promise');
-var { describe, it , after, before} = require('selenium-webdriver/testing');
+
+// if(process.env.dev){
+//     // env dev=true mocha test/;
+//   Dev = process.env.dev;
+//    console.log("This test suite is running in Development Mode")
+// }else{
+//   var Dev = false;
+// }
+
+// var webdriver = require('selenium-webdriver'),
+//     By = webdriver.By,
+//     assert =require('assert'),
+//     until = webdriver.until;
+// var sleep = require('sleep-promise');
+// var { describe, it , after, before} = require('selenium-webdriver/testing');
 var Page = require('../lib/admin_dashboard');
 var Page = require('../lib/admin_dashboard_permissions');
 var Page = require('../lib/student_home_page');
 var Page = require('../lib/admin_employee');
-var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-var sourceFile_credentials = require('../lib/credentials.js');
+// var chai = require('chai');
+// var chaiAsPromised = require('chai-as-promised');
+// var sourceFile_credentials = require('../lib/credentials.js');
 var credentials = sourceFile_credentials.credentials_a;
 var username = credentials['wonka_tester']['username']
 var password = credentials['wonka_tester']['password']
 var permissions_tester_username = credentials['permissions_tester']['username']
 var permissions_tester_password = credentials['permissions_tester']['password']
-var should = chai.should();
-var page;
+// var should = chai.should();
+// var page;
 chai.use(chaiAsPromised);
-var trys = 2
-if(Dev){
-  var trys = 0
-}
-var Browserss = [
-  // 'internet explorer',
-  'firefox',
-  'chrome'
-  ];
+// var trys = 2
+// if(Dev){
+//   var trys = 0
+// }
+// var Browserss = [
+//   // 'internet explorer',
+//   'firefox',
+//   'chrome'
+//   ];
 
-if(Dev){
-  var Browserss = [
-  'chrome'
-  ];
-}
+// if(Dev){
+//   var Browserss = [
+//   'chrome'
+//   ];
+// }
 
-if(process.env.browser){
-  var Browserss = [
-    process.env.browser
-  ];
-  // env browser=chrome mocha test/;
-  // https://stackoverflow.com/questions/16144455/mocha-tests-with-extra-options-or-parameters
-}
+// if(process.env.browser){
+//   var Browserss = [
+//     process.env.browser
+//   ];
+//   // env browser=chrome mocha test/;
+//   // https://stackoverflow.com/questions/16144455/mocha-tests-with-extra-options-or-parameters
+// }
+// for (var i = Browserss.length - 1; i >= 0; i--) {
+//   tests(Browserss[i])
+// };
+
+
 for (var i = Browserss.length - 1; i >= 0; i--) {
   tests(Browserss[i])
 };
+
+
+
 
 function tests(browser){
   describe('Admin Dashboard permission scenarios - '+browser, function(){
@@ -81,11 +92,11 @@ function tests(browser){
 
     function setTitle(optionNumber){
       var ret = sleep(500)
-      .then(() => page.openEditEmployeeModal())
+      .then(() => page.openEditEmployeeModal(permissions_tester_username))
       .then(() => sleep(500))
       .then(() => page.setTitleFromEditEmployeeModal(optionNumber))
       .then(() => page.clickUpdateEditEmployeeModal())
-      .then(() => page.openEditEmployeeModal())
+      .then(() => page.openEditEmployeeModal(permissions_tester_username))
       return ret
     }
 
@@ -130,26 +141,23 @@ function tests(browser){
   })
 }
 
-var Browserss = [
-  'internet explorer',
-  'firefox',
-  'chrome'
-  ];
+// var Browserss = [
+//   'internet explorer',
+//   'firefox',
+//   'chrome'
+//   ];
 
-if(Dev){
-  var Browserss = [
-  'chrome'
-  ];
-}
+// if(Dev){
+//   var Browserss = [
+//   'chrome'
+//   ];
+// }
 
-if(process.env.browser){
-  var Browserss = [
-    process.env.browser
-  ];
-  // env KEY=YOUR_KEY mocha test/;
-  // https://stackoverflow.com/questions/16144455/mocha-tests-with-extra-options-or-parameters
-}
+// if(process.env.browser){
+//   var Browserss = [
+//     process.env.browser
+//   ];
+//   // env KEY=YOUR_KEY mocha test/;
+//   // https://stackoverflow.com/questions/16144455/mocha-tests-with-extra-options-or-parameters
+// }
 
-for (var i = Browserss.length - 1; i >= 0; i--) {
-  tests(Browserss[i])
-};
