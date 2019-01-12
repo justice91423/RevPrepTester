@@ -1,17 +1,20 @@
-if(process.env.dev){
-    // env dev=true mocha test/;
-  Dev = process.env.dev;
-   console.log("This test suite is running in Development Mode")
-}else{
-  var Dev = false;
-}
+var {Dev,trys,Browserss,webdriver,sleep,describe,it,after,before,chai,chaiAsPromised,should,sourceFile_credentials} = require('../lib/top')
 
-var webdriver = require('selenium-webdriver'),
-    By = webdriver.By,
-    assert =require('assert'),
-    until = webdriver.until;
-var sleep = require('sleep-promise');
-var { describe, it , after, before} = require('selenium-webdriver/testing');
+
+// if(process.env.dev){
+//     // env dev=true mocha test/;
+//   Dev = process.env.dev;
+//    console.log("This test suite is running in Development Mode")
+// }else{
+//   var Dev = false;
+// }
+
+// var webdriver = require('selenium-webdriver'),
+//     By = webdriver.By,
+//     assert =require('assert'),
+//     until = webdriver.until;
+// var sleep = require('sleep-promise');
+// var { describe, it , after, before} = require('selenium-webdriver/testing');
 var Page = require('../lib/admin_dashboard');
 var Page = require('../lib/admin_session_editor_modal');
 var Page = require('../lib/admin_dashboard_course');
@@ -20,39 +23,40 @@ var Page = require('../lib/admin_dashboard_add_small_group_course_modal');
 var Page = require('../lib/admin_dashboard_advisor_leads');
 var Page = require('../lib/admin_dashboard_advisor_lead_sources');
 var Page = require('../lib/admin_dashboard_course_search');
-var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-var should = chai.should();
-var sourceFile_credentials = require('../lib/credentials.js');
-var credentials = sourceFile_credentials.credentials_a;
-var username = credentials['wonka_tester']['username']
-var password = credentials['wonka_tester']['password']
-var page;
+var Page = require('../lib/cart_SGC');
+// var chai = require('chai');
+// var chaiAsPromised = require('chai-as-promised');
+// var should = chai.should();
+// var sourceFile_credentials = require('../lib/credentials.js');
+// var credentials = sourceFile_credentials.credentials_a;
+var username = sourceFile_credentials.credentials_a['wonka_tester']['username']
+var password = sourceFile_credentials.credentials_a['wonka_tester']['password']
+// var page;
 chai.use(chaiAsPromised);
-var trys = 2
-if(Dev){
-  var trys = 0
-}
+// var trys = 2
+// if(Dev){
+//   var trys = 0
+// }
 
-var Browserss = [
-  // 'internet explorer',
-  'firefox',
-  'chrome'
-  ];
+// var Browserss = [
+//   // 'internet explorer',
+//   'firefox',
+//   'chrome'
+//   ];
 
-if(Dev){
-  var Browserss = [
-  'chrome'
-  ];
-}
+// if(Dev){
+//   var Browserss = [
+//   'chrome'
+//   ];
+// }
 
-if(process.env.browser){
-  var Browserss = [
-    process.env.browser
-  ];
-  // env KEY=YOUR_KEY mocha test/;
-  // https://stackoverflow.com/questions/16144455/mocha-tests-with-extra-options-or-parameters
-}
+// if(process.env.browser){
+//   var Browserss = [
+//     process.env.browser
+//   ];
+//   // env KEY=YOUR_KEY mocha test/;
+//   // https://stackoverflow.com/questions/16144455/mocha-tests-with-extra-options-or-parameters
+// }
 
 for (var i = Browserss.length - 1; i >= 0; i--) {
   tests(Browserss[i])
@@ -130,7 +134,47 @@ function tests(browser){
     //     verificationText.txt.should.eventually.equal(coursePerams["subject"]+" "+coursePerams["segment"]+" "+"Small Group Course", "Could not create Small Group Course").notify(done); 
     // });
 
-    it('Add a session', function(done){
+    // it('Add a session', function(done){
+    //   this.retries(trys)
+    //   var coursePerams = {
+    //     price:45,
+    //     enrollmentCap:3,
+    //     discountPrice:89,
+    //     note:"these are some notes",
+    //     leadSource:"Wilkins",
+    //     dynamicSubject:false,
+    //     subject:"GMAT",
+    //     material:"Test Purchase Material",
+    //     testDate:"2019 - Apr 13 ACT",
+    //     segment:"Blue",
+    //     grantManualAttendance:false,
+    //     thirdParty:false
+    //   }
+    //   var sessionsPerams = {
+    //     type:"Online Exam",
+    //     date:"01/25/2019",
+    //     time:"7:45pm",
+    //     duration:90,
+    //     tutorsRequired:1,
+    //     repeat:1
+    //   }
+    //   page.clickNavBarItem( false,4,1)
+    //   .then(() => sleep(2000))
+    //   // .then(() => page.clickNewCourseButton(13))
+    //   .then(() => page.clickNewCourseButton("Small Group Course"))
+    //   .then(() => sleep(1000))
+    //   .then(() => page.fillAddSmallGroupCourseModal(coursePerams))
+    //   .then(() => page.clickCreateButtonAddSmallGroupCourseModal())
+    //   .then(() => page.clickAddSessionsButton())
+    //   .then(() => page.fillSessionEditorModal(sessionsPerams))
+    //   .then(() => page.clickAddSessionsButtonSessionEditorModal())
+    //   .then(() => page.clickSaveButtonSessionEditorModal())
+
+    //     var verificationText = page.getInnerHTML('//*[@id="sessions_list"]/tbody/tr/td[2]/div','xpath');
+    //     verificationText.txt.should.eventually.include(coursePerams["subject"]+" "+sessionsPerams["type"].split(" ")[sessionsPerams["type"].split(" ").length-1], "Could not add session").notify(done); 
+    // });
+
+    it('Session appears on SGC Cart screen', function(done){
       this.retries(trys)
       var coursePerams = {
         price:45,
@@ -139,7 +183,7 @@ function tests(browser){
         note:"these are some notes",
         leadSource:"Wilkins",
         dynamicSubject:false,
-        subject:"GMAT",
+        subject:"Japanese with Listening (SAT Subject Test)",
         material:"Test Purchase Material",
         testDate:"2019 - Apr 13 ACT",
         segment:"Blue",
@@ -154,9 +198,11 @@ function tests(browser){
         tutorsRequired:1,
         repeat:1
       }
+      var courseID = ""
       page.clickNavBarItem( false,4,1)
       .then(() => sleep(2000))
-      .then(() => page.clickNewCourseButton(13))
+      // .then(() => page.clickNewCourseButton(13))
+      .then(() => page.clickNewCourseButton("Small Group Course"))
       .then(() => sleep(1000))
       .then(() => page.fillAddSmallGroupCourseModal(coursePerams))
       .then(() => page.clickCreateButtonAddSmallGroupCourseModal())
@@ -164,6 +210,20 @@ function tests(browser){
       .then(() => page.fillSessionEditorModal(sessionsPerams))
       .then(() => page.clickAddSessionsButtonSessionEditorModal())
       .then(() => page.clickSaveButtonSessionEditorModal())
+      .then(() => sleep(2000))
+      .then(() => page.clickPublishButton("Publish"))
+      .then(() => page.driver.getCurrentUrl())
+      .then((url) => url.split("/")[4])
+      .then((splitURL) => {
+        courseID = splitURL
+        return page.visit('https://enroll.rev-prep.com/cart/small-group-courses')
+      })
+      .then(() => sleep(2000))
+      .then(() => page.setSubject_CartSGC(coursePerams["subject"]))
+      .then(() => page.clickSearchButton_CartSGC())
+
+
+      https://enroll.rev-prep.com/cart/small-group-courses
 
         var verificationText = page.getInnerHTML('//*[@id="sessions_list"]/tbody/tr/td[2]/div','xpath');
         verificationText.txt.should.eventually.include(coursePerams["subject"]+" "+sessionsPerams["type"].split(" ")[sessionsPerams["type"].split(" ").length-1], "Could not add session").notify(done); 
