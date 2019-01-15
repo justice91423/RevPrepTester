@@ -11,6 +11,7 @@
   "dependencies": {
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
+    "chromedriver": "^2.45.0",
     "mocha-retry": "^0.1.0",
     "selenium-webdriver": "^3.6.0",
     "sleep-promise": "^8.0.1"
