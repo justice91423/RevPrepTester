@@ -17,6 +17,10 @@ var Page = require('../lib/student_home_page');
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var should = chai.should();
+var sourceFile_credentials = require('../lib/credentials.js');
+var credentials = sourceFile_credentials.credentials_a;
+var username = credentials['wonka_tester']['username']
+var password = credentials['wonka_tester']['password']
 var page;
 chai.use(chaiAsPromised);
 var trys = 2
@@ -53,7 +57,7 @@ function tests(browser){
       page = new Page(browser);
       page.driver.manage().window().setPosition(0, 0);
       page.visit('https://admin.rev-prep.com/login');
-      page.loginAdmin('justice.sommer@revolutionprep.com','revprep123');
+      page.loginAdmin(username,password);
       // page.dismissRingCentralModal()
       // .then(() => sleep(500));
     });
