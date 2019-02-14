@@ -89,7 +89,7 @@ function tests(browser){
       sleep(2000)
       .then(() => page.clicklogin())
       var toastText = page.readToast();
-      toastText.txt.should.eventually.equal('Invalid Login or password.', 'The proper error toast did not appear').notify(done);
+      toastText.txt.should.eventually.equal('Please fix the errors on the form.', 'The proper error toast did not appear').notify(done);
     })
     it('User can NOT login with incorrect password', function(done){
       this.retries(trys)

@@ -2,7 +2,7 @@ const {Builder, By, until, Key, WebDriver, }               = require("selenium-w
 const {assert, expect}                                     = require("chai");
 const Student                                              = require("../lib/student");
 const StudentPage                                          = require("../lib/student_dashboard_home");
-require("chromedriver");
+// require("chromedriver");
 
 const student = new Student();
 const page    = new StudentPage();

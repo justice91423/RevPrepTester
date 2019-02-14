@@ -120,7 +120,7 @@ function tests(browser){
       for (var i = redemptions; i > 0; i--) {
         var ret = startPurchaseApplyCoupon(couponCode)
         .then(() => page.readTotal())
-        .then((verificationText) => verificationText.txt.should.eventually.equal(discountedPrice))
+        .then((verificationText) => verificationText.txt.should.eventually.include(discountedPrice))
         .then(() => completePurchasefromCart())
       }
       return ret
@@ -174,7 +174,7 @@ function tests(browser){
           // var promise1 = Promise.resolve(verificationText.txt);
           // promise1.then(function(promise1,) {
             // verificationText.txt.should.eventually.equal(finalPrice, "The total equaled "+promise1+" instead of "+finalPrice)
-            verificationText.txt.should.eventually.equal(finalPrice, "The total did not equal "+finalPrice+" using coupon code "+couponCode).notify(done)
+            verificationText.txt.should.eventually.include(finalPrice, "The total did not equal "+finalPrice+" using coupon code "+couponCode).notify(done)
           // })
         })
       })
@@ -255,7 +255,7 @@ function tests(browser){
         var redemptions  = 2;
         var experationDate = page.randomDate();
         var couponCode = page.makeCouponCode();
-        var errorText = "\n          Coupon \'"+couponCode+"\' cannot be applied to this order\n        "
+        var errorText = "Coupon \'"+couponCode+"\' cannot be applied to this order"
         var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
         page.gotoCouponsScreen()
         .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,"Any",couponCode))
@@ -264,9 +264,9 @@ function tests(browser){
         .then(() => startPurchaseApplyCoupon(couponCode))
         .then(() => sleep(2000))
         .then(() => page.readError())
-        .then((verificationText) => verificationText.txt.should.eventually.equal(errorText))
+        .then((verificationText) => verificationText.txt.should.eventually.include(errorText))
         .then(() => page.readTotal())
-        .then((verificationText) => verificationText.txt.should.eventually.equal("$198").notify(done))
+        .then((verificationText) => verificationText.txt.should.eventually.include("$198").notify(done))
       })
     this.timeout(30000);
     it( "Coupon can be searched for by name", function(done){
@@ -337,15 +337,15 @@ function tests(browser){
         .then(() => sleep(500))
         .then(() => startPurchaseMembershipOnlyApplyCoupon(couponCode))
         .then(() => page.readTotal())
-        .then((verificationText) => verificationText.txt.should.eventually.equal(finalPrice))
+        .then((verificationText) => verificationText.txt.should.eventually.include(finalPrice))
         .then(() => completePurchasefromCart())
         .then(() => page.dismissRingCentralModal())
         .then(() => sleep(500))
         .then(() => page.getAppliedCoupon())
-        .then((verificationText) => verificationText.txt.should.eventually.equal(targetText).notify(done))
+        .then((verificationText) => verificationText.txt.should.eventually.include(targetText).notify(done))
       })
 
-      // function testRestrictedTo (name,restrictedTo,apply,price, couponName, discount, eachLineItem, recurrence, experationDate, couponCode, finalPrice){
+    //   function testRestrictedTo (name,restrictedTo,apply,price, couponName, discount, eachLineItem, recurrence, experationDate, couponCode, finalPrice){
       function testRestrictedTo (name,restrictedTo,applying,price, i){
         it( name, function(done){
           this.retries(trys)
@@ -360,7 +360,7 @@ function tests(browser){
             experationDate[i] = page.randomDate();
             couponCode[i] = page.makeCouponCode();
             finalPrice[i] = getFinalPrice(eachLineItem,discount,dollars); 
-            errorText[i] = "\n          Coupon \'"+couponCode[i]+"\' cannot be applied to this order\n        ";
+            errorText[i] = "Coupon \'"+couponCode[i]+"\' cannot be applied to this order";
           })
           .then(() => page.createNewCoupon(couponName[i],experationDate[i]["numerical"],"Retail","catigory","description",discount[i],dollars[i],eachLineItem[i],"minAmount",recurrence[i],redemptions[i],restrictedTo,couponCode[i]))
           .then(() => {
@@ -372,13 +372,13 @@ function tests(browser){
               sleep(100)
               .then(() => {
                 readErrorVerificationText[i] = page.readError()
-                readErrorVerificationText[i].txt.should.eventually.equal(errorText[i]).notify(done); 
+                readErrorVerificationText[i].txt.should.eventually.include(errorText[i]).notify(done); 
               })
             }else{
               sleep(1000)
               .then(() => {
                 readTotalVerificationText[i] = page.readTotal()
-                readTotalVerificationText[i].txt.should.eventually.equal("$"+(price-discount[i]), "the total was not "+(price-discount[i]) ).notify(done);
+                readTotalVerificationText[i].txt.should.eventually.include("$"+(price-discount[i]), "the total was not "+(price-discount[i]) ).notify(done);
               })
             }
           })

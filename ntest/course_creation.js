@@ -70,7 +70,7 @@ function tests(browser){
     if(browser=='internet explorer'){
       this.timeout(90000);
     }else{
-      this.timeout(45000);
+      this.timeout(55000);
     }
     
     beforeEach(function(){
@@ -176,6 +176,7 @@ function tests(browser){
 
     it('Session appears on SGC Cart screen', function(done){
       this.retries(trys)
+      var ranDate = page.randomDate()
       var coursePerams = {
         price:45,
         enrollmentCap:3,
@@ -192,7 +193,8 @@ function tests(browser){
       }
       var sessionsPerams = {
         type:"Online Exam",
-        date:"01/25/2019",
+        date: ranDate['numerical'],
+        // date:"01/25/2019",
         time:"7:45pm",
         duration:90,
         tutorsRequired:1,
@@ -212,21 +214,42 @@ function tests(browser){
       .then(() => page.clickSaveButtonSessionEditorModal())
       .then(() => sleep(2000))
       .then(() => page.clickPublishButton("Publish"))
+      .then(() => sleep(500))
       .then(() => page.driver.getCurrentUrl())
       .then((url) => url.split("/")[4])
       .then((splitURL) => {
         courseID = splitURL
+        // courseID = 6666
         return page.visit('https://enroll.rev-prep.com/cart/small-group-courses')
       })
+
+
+      // var courseID = "23945"
+      var foundCourseID = null
+      page.visit('https://enroll.rev-prep.com/cart/small-group-courses')
       .then(() => sleep(2000))
       .then(() => page.setSubject_CartSGC(coursePerams["subject"]))
       .then(() => page.clickSearchButton_CartSGC())
+      .then(() => sleep(3000))
+      .then(() => {
+        var verificationText = page.newGetHref('//a[@href="https://admin.rev-prep.com/courses/'+courseID+'"]','xpath')
+        console.log("courseID "+courseID)
 
+        verificationText.should.eventually.equal('https://admin.rev-prXep.com/courses/'+courseID, "SGC was not added to cart page").notify(done)
+      })
 
-      https://enroll.rev-prep.com/cart/small-group-courses
+      // .then(() => page.testThis())
+      // .then((foundLink) => console.log("foundLink ",foundLink) 
+      // .then((aTags) => {
+      //   for (var i = aTags.length - 1; i >= 0; i--) {
+      //     if(this.newGetHrefOfElement(aTags[i].split("https://admin.rev-prep.com/courses/")[1]) && this.newGetHrefOfElement(aTags[i].split("https://admin.rev-prep.com/courses/")[1]) == courseID){
+      //       foundCourseID = true
+      //       console.log("linkText ",linkText)
+      //     }
+      //   }
+      // })
 
-        var verificationText = page.getInnerHTML('//*[@id="sessions_list"]/tbody/tr/td[2]/div','xpath');
-        verificationText.txt.should.eventually.include(coursePerams["subject"]+" "+sessionsPerams["type"].split(" ")[sessionsPerams["type"].split(" ").length-1], "Could not add session").notify(done); 
+    
     });
 
     // it('Create a lead and search for it', function(done){
