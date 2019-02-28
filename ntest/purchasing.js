@@ -73,7 +73,7 @@ for (var i = Browserss.length - 1; i >= 0; i--) {
 // }
 
 function tests(browser){
-  describe('Admin Dashboard Create Button scenarios - '+browser, function(){
+  describe('Admin Retail purchase scenarios - '+browser, function(){
     // this.timeout(20000);
     if(browser=='internet explorer'){
       this.timeout(90000);
@@ -128,7 +128,12 @@ function tests(browser){
       customInTitle = "hour Custom"
     }
 
-    it(hours+' '+customInTitle+' '+tier+' Private Tutoring package can be purchased '+preposition+' Membership and is charged properly', function(done){
+    var enrollmentFeeText = ""
+    if(hours<12){
+      enrollmentFeeText = ", includes Enrollment Fee,"
+    }
+
+    it(hours+' '+customInTitle+' '+tier+' Private Tutoring package can be purchased '+preposition+' Membership'+enrollmentFeeText+' and is charged properly', function(done){
       this.retries(trys)
       // var hours = 12
       // var membership = true
@@ -151,7 +156,12 @@ function tests(browser){
       if(custom){
         var packagePrice = hours*price
       }else{
-        var packagePrice = ((Math.ceil(hours*(price/100)))*100)-1
+        // var packagePrice = ((Math.ceil(hours*(price/100)))*100)-1
+        if(membership){
+          var packagePrice = packagePrices[tier]["membership"]
+        }else{
+          var packagePrice = packagePrices[tier]["noMembership"]
+        }
       }
       if(hours<12){
         var enrollmentFee = 250
@@ -184,6 +194,21 @@ function tests(browser){
 
   var preDefinedPackageHours = [12,24,36,48,60,80,100]
   var tiers = ["Advanced","Distinguished","Premium","Global Elite"]
+
+  var packagePrices = {
+    Advanced:{
+      membership:{12:1199,24:2399,36:3599,48:4798,60:5998,807999:,100:9999},
+      noMembership:{12:1599,24:3099,36:4699,48:6298,60:7798,80:10399,100:12999}
+    }
+    Distinguished:{
+      membership:{12:1799,24:3599,36:5399,48:7198,60:8998,80:11999,100:14999},
+      noMembership:{12:2199,24:4299,36:6499,48:8698,60:10798,80:14339,100:17999}
+    }
+    Premium:{
+      membership:{12:2399,24:4799,36:7199,48:9598,60:11998,80:15999,100:19999},
+      noMembership:{12:2799,24:5499,36:8299,48:11098,60:13798,80:18399,100:22999}
+    }
+  }
 
   
   for (var x = tiers.length - 1; x >= 0; x--) {
