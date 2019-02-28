@@ -56,14 +56,14 @@ for (var i = Browserss.length - 1; i >= 0; i--) {
 
 
 function searchForLead(name){
-  return page.clickAdvisorOption(1)
+  return page.clickAdvisorOption("leads")
   .then(() => page.clickShowAdvancedFiltersAdvisorLeads())
   .then(() => page.enterFiltersAdvisorLeads(name))
   .then(() => page.clickSearchButtonAdvisorLeads())
 }
 
 function searchForLeadSource(name){
-  return page.clickAdvisorOption(3)
+  return page.clickAdvisorOption("lead-sources")
   .then(() => page.clickShowAdvancedFiltersAdvisorLeadSources())
   .then(() => page.enterFiltersAdvisorLeadSources(name))
   .then(() => page.clickSearchButtonAdvisorLeadSources())
@@ -105,7 +105,9 @@ function tests(browser){
       .then(() => page.clickCreateButtonNewLeadModal())
       .then(() => sleep(500))
 
-      var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[1]/div/h4/span[1]','xpath');
+      var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[1]/div/h4/div/span[1]','xpath');
+
+
       verificationText.txt.should.eventually.equal(firstName+" "+lastName, "The Lead was not created properly").notify(done);
     });
 
@@ -123,7 +125,7 @@ function tests(browser){
       .then(() => searchForLead(firstName+" "+lastName))
       .then(() => sleep(5000))
       .then(() => {
-        var verificationText = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/crm-leads/div/crm-leads-results/div/div/div/table/tbody/tr[1]/td[2]/a','xpath')
+        var verificationText = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/crm-leads/div/crm-leads-results/div/div/div/table/tbody/tr/td[2]/a','xpath')
         verificationText.txt.should.eventually.include(firstName+" "+lastName, "The newly created Lead did not appear as the search result");
       })
       .then(() => {

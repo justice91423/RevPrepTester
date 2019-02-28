@@ -59,7 +59,8 @@ function tests(browser){
 
     function setTitle(optionNumber){
       var ret = sleep(500)
-      .then(() => page.findAndOpenEmployee(permissions_tester_username))
+      .then(() => page.visit('https://admin.rev-prep.com/employees/2371/contacts'))
+      // .then(() => page.findAndOpenEmployee(permissions_tester_username))
       .then(() => page.clickEditedEmplyeeButton())
       .then(() => page.setTitleFromEditEmployeeModal(optionNumber))
       .then(() => page.clickUpdateEditEmployeeModal())
@@ -181,6 +182,7 @@ function tests(browser){
             }
           }
         }
+
         if(name=="Wonka"){
           it('Removing Spoof Advisor role removes spoof ability',  function(done){
             this.retries(trys)
