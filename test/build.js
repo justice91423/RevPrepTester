@@ -70,6 +70,10 @@ if(process.env.build){
         page.visit('https://admin.rev-prep.com/login')
       });
       afterEach(function(){
+        if (this.currentTest.state == 'failed') {
+        addContext(this, 'screenshots/'+testImageName+'.png');
+        page.screenshot(testImageName)
+      }
         if(Dev){
           return
         }

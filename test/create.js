@@ -1,19 +1,6 @@
 
-var {Dev,trys,Browserss,webdriver,sleep,describe,it,after,before,chai,chaiAsPromised,should,sourceFile_credentials} = require('../lib/top')
-// if(process.env.dev){
-//     // env dev=true mocha test/;
-//   Dev = process.env.dev;
-//    console.log("This test suite is running in Development Mode")
-// }else{
-//   var Dev = false;
-// }
+var {Dev,trys,adminBrowserss,Browserss,webdriver,sleep,describe,it,after,before,chai,chaiAsPromised,should,sourceFile_credentials} = require('../lib/top')
 
-// var webdriver = require('selenium-webdriver'),
-//     By = webdriver.By,
-//     assert =require('assert'),
-//     until = webdriver.until;
-// var sleep = require('sleep-promise');
-// var { describe, it , after, before} = require('selenium-webdriver/testing');
 var Page = require('../lib/admin_dashboard');
 var Page = require('../lib/admin_dashboard_new_lead_modal');
 var Page = require('../lib/admin_dashboard_new_school_modal');
@@ -22,38 +9,15 @@ var Page = require('../lib/admin_dashboard_CRM');
 var Page = require('../lib/admin_dashboard_advisor_leads');
 var Page = require('../lib/admin_dashboard_advisor_lead_sources');
 var Page = require('../lib/student_home_page');
-// var chai = require('chai');
-// var chaiAsPromised = require('chai-as-promised');
-// var should = chai.should();
-// var page;
-// var sourceFile_credentials = require('../lib/credentials.js');
-// var credentials = sourceFile_credentials.credentials_a;
+
 var username = sourceFile_credentials.credentials_a['wonka_tester']['username']
 var password = sourceFile_credentials.credentials_a['wonka_tester']['password']
 chai.use(chaiAsPromised);
-// var trys = 2
-// if(Dev){
-//   var trys = 0
-// }
-
-// var Browserss = [
-//   // 'internet explorer',
-//   'firefox',
-//   'chrome'
-//   ];
-
-// if(Dev){
-//   var Browserss = [
-//   'chrome'
-//   ];
-// }
 
 
-
-for (var i = Browserss.length - 1; i >= 0; i--) {
-  tests(Browserss[i])
+for (var i = adminBrowserss.length - 1; i >= 0; i--) {
+  tests(adminBrowserss[i])
 };
-
 
 function searchForLead(name){
   return page.clickAdvisorOption("leads")
@@ -87,6 +51,10 @@ function tests(browser){
       .then(() => sleep(5000))
     });
     afterEach(function(){
+      if (this.currentTest.state == 'failed') {
+        addContext(this, 'screenshots/'+testImageName+'.png');
+        page.screenshot(testImageName)
+      }
       if(Dev){
         return
       }
@@ -106,7 +74,6 @@ function tests(browser){
       .then(() => sleep(500))
 
       var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[1]/div/h4/div/span[1]','xpath');
-
 
       verificationText.txt.should.eventually.equal(firstName+" "+lastName, "The Lead was not created properly").notify(done);
     });
@@ -130,7 +97,7 @@ function tests(browser){
       })
       .then(() => {
         var verificationSourceText = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/crm-leads/div/crm-leads-results/div/div/div/table/tbody/tr/td[8]','xpath')
-        verificationSourceText.txt.should.eventually.equal("Employee Referral", "Lead had the wrong source").notify(done);
+        verificationSourceText.txt.should.eventually.equal("Gift Card", "Lead had the wrong source").notify(done);
       });
     });
 

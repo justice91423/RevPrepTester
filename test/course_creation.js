@@ -1,4 +1,4 @@
-var {Dev,trys,Browserss,webdriver,sleep,describe,it,after,before,chai,chaiAsPromised,should,sourceFile_credentials} = require('../lib/top')
+var {Dev,trys,adminBrowserss,Browserss,webdriver,sleep,describe,it,after,before,jquery,chai,chaiJquery,chaiAsPromised,should,sourceFile_credentials,addContext,testImageName} = require('../lib/top')
 
 var Page = require('../lib/admin_dashboard');
 var Page = require('../lib/admin_session_editor_modal');
@@ -12,16 +12,14 @@ var Page = require('../lib/cart_SGC');
 
 var username = sourceFile_credentials.credentials_a['wonka_tester']['username']
 var password = sourceFile_credentials.credentials_a['wonka_tester']['password']
-
 chai.use(chaiAsPromised);
 
-for (var i = Browserss.length - 1; i >= 0; i--) {
-  tests(Browserss[i])
+for (var i = adminBrowserss.length - 1; i >= 0; i--) {
+  tests(adminBrowserss[i])
 };
 
 function tests(browser){
   describe('Course creation', function(){
-    // this.timeout(20000);
     if(browser=='internet explorer'){
       this.timeout(90000);
     }else{
@@ -37,6 +35,10 @@ function tests(browser){
       .then(() => sleep(5000))
     });
     afterEach(function(){
+      if (this.currentTest.state == 'failed') {
+        addContext(this, 'screenshots/'+testImageName+'.png');
+        page.screenshot(testImageName)
+      }
       if(Dev){
         return
       }
@@ -108,7 +110,7 @@ function tests(browser){
 
       var sessionsPerams = {
         type:"Online Exam",
-        date: (page.randomDate())["numerical"],
+        date:(page.randomDate())["numerical"],
         time:"7:45pm",
         duration:90,
         tutorsRequired:1,
@@ -116,7 +118,6 @@ function tests(browser){
       }
       page.clickNavBarItem( false,4,1)
       .then(() => sleep(2000))
-      // .then(() => page.clickNewCourseButton(13))
       .then(() => page.clickNewCourseButton("Small Group Course"))
       .then(() => sleep(1000))
       .then(() => page.fillAddSmallGroupCourseModal(coursePerams))
@@ -150,7 +151,6 @@ function tests(browser){
       var sessionsPerams = {
         type:"Online Exam",
         date: (page.randomDate())['numerical'],
-        // date:"01/25/2019",
         time:"7:45pm",
         duration:90,
         tutorsRequired:1,
@@ -159,7 +159,6 @@ function tests(browser){
       var courseID = ""
       page.clickNavBarItem( false,4,1)
       .then(() => sleep(2000))
-      // .then(() => page.clickNewCourseButton(13))
       .then(() => page.clickNewCourseButton("Small Group Course"))
       .then(() => sleep(1000))
       .then(() => page.fillAddSmallGroupCourseModal(coursePerams))
@@ -175,7 +174,6 @@ function tests(browser){
       .then((url) => url.split("/")[4])
       .then((splitURL) => {
         courseID = splitURL
-        // courseID = 6666
         return page.visit('https://enroll.rev-prep.com/cart/small-group-courses')
       })
 
@@ -186,9 +184,7 @@ function tests(browser){
       .then(() => page.clickSearchButton_CartSGC())
       .then(() => sleep(3000))
       .then(() => {
-        console.log("courseID "+courseID)
         var verificationText = page.newGetHref('//a[@href="https://admin.rev-prep.com/courses/'+courseID+'"]','xpath')
-        
         verificationText.should.eventually.equal('https://admin.rev-prep.com/courses/'+courseID, "SGC was not added to cart page").notify(done)
       })
     });
