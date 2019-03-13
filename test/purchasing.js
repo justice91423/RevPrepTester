@@ -18,6 +18,8 @@ for (var i = adminBrowserss.length - 1; i >= 0; i--) {
   tests(adminBrowserss[i])
 };
 
+
+
 function tests(browser){
   describe('Admin Retail purchase scenarios - '+browser, function(){
     if(browser=='internet explorer'||browser=='firefox'){
@@ -35,6 +37,7 @@ function tests(browser){
       .then(() => sleep(5000))
     });
     afterEach(function(){
+      page.debug("currentTest.state "+this.currentTest.state)
       if (this.currentTest.state == 'failed') {
         addContext(this, 'screenshots/'+testImageName+'.png');
         page.screenshot(testImageName)
@@ -46,6 +49,8 @@ function tests(browser){
     });
 
     it('Membership can be purchased and is charged properly', function(done){
+
+      page.debug(page.Akbar());
       testImageName = this.test.title.replace(/ /g,"_")
       page.debug("testImageName "+testImageName)
       this.retries(trys)
@@ -163,47 +168,6 @@ function tests(browser){
     testPackage(Math.floor(Math.random() * 11) + 1, false, tiers[x], true)
     testPackage(Math.floor(Math.random() * 100) + 11, false, tiers[x], true)  
   }
-
-    it('Private Tutoring can be purchased and is charged properly', function(done){
-      this.retries(trys)
-      var hours = 12
-      var membership = true
-      var tier = "Distinguished"
-      var custom = true
-
-      switch (tier) {
-      case "Advanced":
-        var price = 129 - (30*membership);
-        break;
-      case "Distinguished":
-        var price = 179 - (30*membership);
-        break;
-      case "Premium":
-        var price = 229 - (30*membership);
-        break;
-      case "Global Elite":
-          var price = 699 - (30*membership);
-      }
-      if(custom){
-        var packagePrice = hours*price
-      }else{
-        var packagePrice = ((Math.ceil(hours*(price/100)))*100)-1
-      }
-
-      var finalCost = packagePrice+(membership*99)
-      const formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2
-      })
-
-      page.visit('https://enroll.rev-prep.com/cart/tutor-packages')
-      .then(() => page.addPtHoursToCart("PSAT", "Distinguished", 3, hours, price, custom, membership))
-      .then(() => page.completePurchaseFromCart())
-      .then((orderID) => page.visit('https://admin.rev-prep.com/orders/'+orderID))
-      .then(() => page.getInnerHTML("//strong[preceding::strong[ contains(string(), 'Paid')]]",'xpath'))
-      .then((verificationText) => (verificationText.txt.should.eventually.equal("-"+formatter.format(finalCost), "The user paid the wrong amount").notify(done)))
-    });
   })
 }
 

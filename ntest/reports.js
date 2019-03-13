@@ -73,7 +73,7 @@ for (var i = Browserss.length - 1; i >= 0; i--) {
 // }
 
 function tests(browser){
-  describe('Admin Dashboard Create Button scenarios - '+browser, function(){
+  describe('Admin Dashboard Report screen scenarios - '+browser, function(){
     // this.timeout(20000);
     if(browser=='internet explorer'){
       this.timeout(90000);
