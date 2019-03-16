@@ -7,7 +7,10 @@ var Page = require('../lib/student_home_page');
 var Page = require('../lib/admin_employee');
 var Page = require('../lib/admin_dashboard_lead_sources');
 var Page = require('../lib/admin_dashboard_lead_source_page');
+var Page = require('../lib/admin_dashboard_users');
 // var By = webdriver.By
+
+var startingTrys = trys
 
 var username = sourceFile_credentials.credentials_a['wonka_tester']['username']
 var password = sourceFile_credentials.credentials_a['wonka_tester']['password']
@@ -24,10 +27,7 @@ const { JSDOM } = jsdom;
 const { window } = new JSDOM();
 const { document } = (new JSDOM('')).window;
 global.document = document;
-
-  // var $ = jQuery = require('jquery')(window);
-
-
+// var $ = jQuery = require('jquery')(window);
 for (var i = adminBrowserss.length - 1; i >= 0; i--) {
   tests(adminBrowserss[i])
 };
@@ -51,8 +51,14 @@ function tests(browser){
           passing = false;
           permissionsSettingsTest = false;
         }
-        addContext(this, 'screenshots/'+testImageName+'.png');
-        page.screenshot(testImageName)
+        if(trys){
+          trys = trys-1
+        }
+        addContext(this, 'screenshots/'+this.currentTest.title.replace(/ /g,"_")+'.png');
+        page.screenshot(this.currentTest.title.replace(/ /g,"_"))
+      }
+      if (this.currentTest.state == 'passed') {
+        trys = startingTrys
       }
       if(Dev){
         return
@@ -70,8 +76,8 @@ function tests(browser){
 
     function setTitle(name){
       var ret = sleep(500)
-      .then(() => page.visit('https://admin.rev-prep.com/employees/2371/contacts'))
-      // .then(() => page.findAndOpenEmployee(permissions_tester_username))
+      .then(() => page.visit('https://admin.rev-prep.com/users/employees?query=permissions_tester@rainforest.com&per=25&page=1&orderBy=score&orderSort=asc&active=true'))
+      .then(() => page.findAndOpenEmployee(permissions_tester_username))
       .then(() => page.clickEditedEmplyeeButton())
       .then(() => page.setTitleFromEditEmployeeModal(name))
       .then(() => page.clickUpdateEditEmployeeModal())
@@ -85,7 +91,6 @@ function tests(browser){
         passing = true;
         permissionsSettingsTest = true;
         this.retries(trys)
-        testImageName = this.test.title.replace(/ /g,"_");
         page.loginAdmin(username,password)
         // .then(() => page.dismissRingCentralModal())
         .then(() => setTitle(name))
@@ -96,16 +101,11 @@ function tests(browser){
           page.debug("Return from checkTitleFromEditEmployeeModal() = "+titleSelected.sel)
           titleSelected.sel.should.equal('true',name+" is not set as employee title");
         })
-        .then(() => {
-          // passing = true
-          done()
-        })
+        .then(() => done())
       });
-
       
       it(name+' role provides correct Navbar items', function(done){
         this.retries(trys)
-        testImageName = this.test.title.replace(/ /g,"_");
         if(passing==false){
           this.retries(0);
           name.should.equal(true, name+' was not set properly.  This test can not be run');
@@ -159,7 +159,6 @@ function tests(browser){
             // https://revolutionprep.atlassian.net/browse/OD-4436
             it(name+" "+verbs[advisorToggleEditButtonsCount]+" edit the Advisor on the Lead Source page", function(done){
               this.retries(trys)
-              testImageName = this.test.title.replace(/ /g,"_");
               if(passing==false){
                 this.retries(0)
                 name.should.equal(true, name+' was not set properly.  This test can not be run')
@@ -178,7 +177,6 @@ function tests(browser){
 
             it(name+" "+verbs[closerToggleEditButtonsCount]+" edit the Closer on the Lead Source page", function(done){
               this.retries(trys)
-              testImageName = this.test.title.replace(/ /g,"_");
               if(passing==false){
                 this.retries(0)
                 name.should.equal(true, name+' was not set properly.  This test can not be run')
@@ -197,7 +195,6 @@ function tests(browser){
 
             it(name+" "+verbs[statusToggleEditButtonsCount]+" edit the Status on the Lead Source page", function(done){
               this.retries(trys)
-              testImageName = this.test.title.replace(/ /g,"_");
               if(passing==false){
                 this.retries(0)
                 name.should.equal(true, name+' was not set properly.  This test can not be run')
@@ -220,7 +217,6 @@ function tests(browser){
       if(name=="Wonka"){
         it('Removing Spoof Advisor role removes spoof ability',  function(done){
           this.retries(trys)
-          testImageName = this.test.title.replace(/ /g,"_");
           if(passing==false){
             this.retries(0)
             name.should.equal(true, name+' was not set properly in a previous test.  Therefore this test can not be run')
