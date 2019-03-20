@@ -53,12 +53,16 @@ function tests(browser){
       .then(() => sleep(5000))
     });
     afterEach(function(){
-      // if (this.currentTest.state == 'failed') {
-      //   addContext('This test failed');
-      // }
+
       addContext(this, 'screenshots/'+this.currentTest.title.replace(/ /g,"_")+'.png');
       page.screenshot(this.currentTest.title.replace(/ /g,"_"))
       trys = page.adjustTrys(this.currentTest.state,trys)
+      // console.log("state ", this.currentTest.state)
+      // if(this.currentTest.state == "passed"){
+      //   console.log("it passed ")
+      //   page.visit('https://memegenerator.net/img/instances/34416835/charlie-you-passed-the-test.jpg')
+      //   .then(() => sleep(5000))
+      // }
       if(Dev){
         return
       }
@@ -81,7 +85,7 @@ function tests(browser){
         var lastName = page.randomString(10,"alpha");
 
         page.clickCreateOption(1)
-        .then(() => page.fillNewLead(firstName,lastName,leadSourceType,courseID))
+        .then(() => page.fillNewLead(firstName,lastName,false,leadSourceType,courseID))
         .then(() => sleep(500))
         .then(() => page.clickCreateButtonNewLeadModal())
         .then(() => sleep(500))
@@ -118,10 +122,7 @@ function tests(browser){
 
     it('Create a lead with VIP', function(done){
       this.retries(trys)
-      // var firstName = page.randomString(10,"alpha");
-      // var lastName = page.randomString(10,"alpha");
       page.clickCreateOption(1)
-      // .then(() => page.fillNewLead(firstName,lastName))
       .then(() => page.fillNewLead())
       .then(() => page.toggleVIPNewLeadModal())
       .then(() => page.clickCreateButtonNewLeadModal())
@@ -197,7 +198,6 @@ function tests(browser){
         verificationText.txt.should.eventually.include(firstName+" "+lastName, "The parents name ("+firstName+" "+lastName+") did not appear properly").notify(done);
       })
     });
-
 
     function createSchoolTest(categorie,type){
       it('Create a '+type+' '+categorie+' and search for it', function(done){
