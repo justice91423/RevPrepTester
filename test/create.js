@@ -16,15 +16,16 @@ var password = sourceFile_credentials.credentials_a['wonka_tester']['password']
 chai.use(chaiAsPromised);
 var assert = chai.assert;
 
-
 for (var i = adminBrowserss.length - 1; i >= 0; i--) {
   tests(adminBrowserss[i])
 };
 
-function searchForLead(name){
+function searchForLead(name,status){
   return page.clickAdvisorOption("leads")
   .then(() => page.clickShowAdvancedFiltersAdvisorLeads())
-  .then(() => page.enterFiltersAdvisorLeads(name))
+  .then(() => page.dismissToast())
+  .then(() => sleep(5000))
+  .then(() => page.enterFiltersAdvisorLeads(name,[status]))
   .then(() => page.clickSearchButtonAdvisorLeads())
 }
 
@@ -57,20 +58,14 @@ function tests(browser){
       addContext(this, 'screenshots/'+this.currentTest.title.replace(/ /g,"_")+'.png');
       page.screenshot(this.currentTest.title.replace(/ /g,"_"))
       trys = page.adjustTrys(this.currentTest.state,trys)
-      // console.log("state ", this.currentTest.state)
-      // if(this.currentTest.state == "passed"){
-      //   console.log("it passed ")
-      //   page.visit('https://memegenerator.net/img/instances/34416835/charlie-you-passed-the-test.jpg')
-      //   .then(() => sleep(5000))
-      // }
       if(Dev){
         return
       }
       page.quit();
     });
 
-    function createLeadTest(leadSourceType){
-      it('Create a lead with Lead Source set to '+leadSourceType+' and search for it', function(done){
+    function createLeadTest(leadSourceType="Gift Card",status="Pre-Conversation"){
+      it('Create a lead with Lead Source set to '+leadSourceType+' and status set to '+status+', and search for it', function(done){
         this.retries(trys)
         if(leadSourceType == "Seminar/Workshop" ){
           var courseID = page.getACourseID('Seminar')
@@ -85,13 +80,13 @@ function tests(browser){
         var lastName = page.randomString(10,"alpha");
 
         page.clickCreateOption(1)
-        .then(() => page.fillNewLead(firstName,lastName,false,leadSourceType,courseID))
+        .then(() => page.fillNewLead(firstName,lastName,false,leadSourceType,courseID,status))
         .then(() => sleep(500))
         .then(() => page.clickCreateButtonNewLeadModal())
         .then(() => sleep(500))
         .then(() => page.clickXtoCloseCRM())
         .then(() => sleep(500))
-        .then(() => searchForLead(firstName+" "+lastName))
+        .then(() => searchForLead(firstName+" "+lastName,status))
         .then(() => sleep(5000))
         .then(() => {
           var verificationText = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/crm-leads/div/crm-leads-results/div/div/div/table/tbody/tr/td[2]/a','xpath')
@@ -116,8 +111,23 @@ function tests(browser){
       "Gift Card",
       "Non-Gift Card Offer"
     ]
+
+    var leadSourceStatuses = [
+      "Pre-Conversation",
+      "In Conversation",
+      "Not Ready",
+      "Not Interested",
+      "Could Not Reach",
+      "Do Not Contact",
+      "No Sales/Partner Contact"
+    ]
+
     for (var i = leadSourceTypes.length - 1; i >= 0; i--) {
-      createLeadTest(leadSourceTypes[i])
+      createLeadTest(leadSourceTypes[i], "Pre-Conversation")
+    }
+
+    for (var n = leadSourceStatuses.length - 1; n >= 0; n--) {
+      createLeadTest("Gift Card", leadSourceStatuses[n])
     }
 
     it('Create a lead with VIP', function(done){
@@ -199,13 +209,13 @@ function tests(browser){
       })
     });
 
-    function createSchoolTest(categorie,type){
-      it('Create a '+type+' '+categorie+' and search for it', function(done){
+    function createSchoolTest(category,type){
+      it('Create a '+type+' '+category+' and search for it', function(done){
         this.retries(trys)
         var name = page.randomString(10,"alpha");
 
         page.clickCreateOption(2)
-        .then(() => page.fillNewSchool(name,type,categorie))
+        .then(() => page.fillNewSchool(name,type,category))
         .then(() => page.clickCreateButtonNewSchoolModal())
         .then(() => sleep(500))
         .then(() => searchForLeadSource(name))
@@ -225,22 +235,34 @@ function tests(browser){
         createSchoolTest(schoolCategories[i],schoolTypes[x])
       }
     }
+    function createLeadSourceTest(category){
+      it('Create a lead source with category set to '+category+' and search for it', function(done){
+        this.retries(trys)
+        var name = page.randomString(10,"alpha");
 
-    it('Create a lead source and search for it', function(done){
-      this.retries(trys)
-      var name = page.randomString(10,"alpha");
+        page.clickCreateOption(3)
+        .then(() => page.fillNewLeadSource(name,category))
+        .then(() => page.clickCreateButtonNewLeadSourceModal())
+        .then(() => sleep(500))
+        .then(() => searchForLeadSource(name))
+        .then(() => sleep(5000))
+        .then(() => {
+          var verificationText = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/crm-lead-sources/div/div[2]/crm-lead-sources-results/div/div/div/table/tbody/tr/td[2]/a','xpath')
+          verificationText.txt.should.eventually.include(name, "The newly created Lead source did not appear as the search result");
+        })
+        .then(() => {
+          var verificationCategoryText = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/crm-lead-sources/div/div[2]/crm-lead-sources-results/div/div/div/table/tbody/tr/td[5]','xpath')
+          verificationCategoryText.txt.should.eventually.equal(category, "Lead Source had the wrong category").notify(done);
+        });
+      });
+    }
 
-      page.clickCreateOption(3)
-      .then(() => page.fillNewLeadSource(name))
-      .then(() => page.clickCreateButtonNewLeadSourceModal())
-      .then(() => sleep(500))
-      .then(() => searchForLeadSource(name))
-      .then(() => sleep(5000))
-      .then(() => {
-        var verificationText = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/crm-lead-sources/div/div[2]/crm-lead-sources-results/div/div/div/table/tbody/tr/td[2]/a','xpath')
-        verificationText.txt.should.eventually.include(name, "The newly created Lead source did not appear as the search result").notify(done);
-      })
-    });
+    var leadSourceCategories = ["Business", "Club/Organization","Revolution Affiliate", "Independent Counselor", "Library"]
+
+    for (var y = leadSourceCategories.length - 1; y >= 0; y--) {
+      createSchoolTest(leadSourceCategories[y])
+    }
+
   })
 }
 
