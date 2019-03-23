@@ -37,11 +37,9 @@ function tests(browser){
       .then(() => sleep(5000))
     });
     afterEach(function(){
-      page.debug("currentTest.state "+this.currentTest.state)
-      if (this.currentTest.state == 'failed') {
-        addContext(this, 'screenshots/'+testImageName+'.png');
-        page.screenshot(testImageName)
-      }
+      addContext(this, 'screenshots/'+this.currentTest.title.replace(/ /g,"_")+'.png');
+      page.screenshot(this.currentTest.title.replace(/ /g,"_"))
+      trys = page.adjustTrys(this.currentTest.state,trys)
       if(Dev){
         return
       }
@@ -49,9 +47,7 @@ function tests(browser){
     });
 
     it('Membership can be purchased and is charged properly', function(done){
-
       page.debug(page.Akbar());
-      testImageName = this.test.title.replace(/ /g,"_")
       page.debug("testImageName "+testImageName)
       this.retries(trys)
       page.visit('https://enroll.rev-prep.com/cart/tutor-packages')
