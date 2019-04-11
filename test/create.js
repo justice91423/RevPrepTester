@@ -230,6 +230,9 @@ function tests(browser){
     var schoolCategories = ["Elementary School", "Middle School", "High School", "University", "Adult School"]
     var schoolTypes = ["Public", "Private", "Catholic", "Charter", "Boarding", "Lutheran", "Christian", "Home"]
 
+    // var schoolCategories = ["Elementary School"]
+    // var schoolTypes = ["Public"]
+
     for (var i = schoolCategories.length - 1; i >= 0; i--) {
       for (var x = schoolTypes.length - 1; x >= 0; x--) {
         createSchoolTest(schoolCategories[i],schoolTypes[x])
@@ -260,7 +263,7 @@ function tests(browser){
     var leadSourceCategories = ["Business", "Club/Organization","Revolution Affiliate", "Independent Counselor", "Library"]
 
     for (var y = leadSourceCategories.length - 1; y >= 0; y--) {
-      createSchoolTest(leadSourceCategories[y])
+      createLeadSourceTest(leadSourceCategories[y])
     }
 
   })

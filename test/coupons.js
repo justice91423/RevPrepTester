@@ -117,15 +117,17 @@ function tests(browser){
       return finalPrice
     }
 
-    function couponTest (name,discount,dollars,redemptions=0,eachLineItem=false){
+    function couponTest (name,discount,dollars,redemptions=0,eachLineItem=false,lineItemMin=false,finalPrice=false){
       it( name, function(done){
         this.retries(trys)
         var experationDate = page.randomDate();
         var couponCode = page.makeCouponCode();
         var recurrence = 0;
-        var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
+        if(!finalPrice){
+          var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
+        }
         page.gotoCouponsScreen()
-        .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,"Any",couponCode))
+        .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","Gift Card","description",discount,dollars,eachLineItem,lineItemMin,recurrence,redemptions,"Any",couponCode))
         .then(() => sleep(500))
         .then(() => {
           startPurchaseApplyCoupon(couponCode)
@@ -138,6 +140,8 @@ function tests(browser){
         })
       })
     }
+
+    couponTest('Coupon can NOT be applied if no items meet the "Line Item Min. Amount".',50,true,0,false,100,198);
 
     function makeRandomString(Length,alphanumeric=false){
       var text = "";
@@ -157,7 +161,7 @@ function tests(browser){
       this.retries(trys)
       page.gotoCouponsScreen()
         var verificationText = page.getInnerHTML('body > ui-view > app > div > div > div > div > ui-view > coupons > div.my-4.d-flex.justify-content-between > h1');
-        verificationText.txt.should.eventually.equal('XXXCoupons').notify(done);    
+        verificationText.txt.should.eventually.equal('Coupons').notify(done);    
     })
 
     it('New Coupon modal is accessible', function(done){
@@ -165,7 +169,7 @@ function tests(browser){
       page.gotoCouponsScreen()
       .then(() => page.clickNewCouponButton())
       var verificationText = page.getInnerHTML('body > div.modal.fade.ng-scope.ng-isolate-scope.in > div > div > coupon-modal > div.modal-header > h2');
-      verificationText.txt.should.eventually.equal('\n    XXXNew Coupon\n  ').notify(done);
+      verificationText.txt.should.eventually.equal('\n    New Coupon\n  ').notify(done);
     })
 
     it('Edit Coupon modal is accessible', function(done){
@@ -199,148 +203,151 @@ function tests(browser){
       }
     ]
 
-    // for (var i = couponTestPerams.length - 1; i >= 0; i--) {
-    //   couponTest (couponTestPerams[i]["Name"],couponTestPerams[i]["Discount"],couponTestPerams[i]["Dollars"],couponTestPerams[i]["redemptions"],couponTestPerams[i]["eachLineItem"]);
-    // }
-    // this.timeout(120000);
-    // it( "Coupons with limited redemptions works properly", function(done){
-    //     this.retries(trys)
-    //     var discount = 40;
-    //     var dollars  = true;
-    //     var eachLineItem  = false;
-    //     var recurrence = false;
-    //     var redemptions  = 2;
-    //     var experationDate = page.randomDate();
-    //     var couponCode = page.makeCouponCode();
-    //     var errorText = "Coupon \'"+couponCode+"\' cannot be applied to this order"
-    //     var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
-    //     page.gotoCouponsScreen()
-    //     .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,"Any",couponCode))
-    //     .then(() => useUpRedemptions(redemptions,couponCode,finalPrice))
-    //     .then(() => sleep(500))
-    //     .then(() => startPurchaseApplyCoupon(couponCode))
-    //     .then(() => sleep(2000))
-    //     .then(() => page.readError())
-    //     .then((verificationText) => verificationText.txt.should.eventually.include(errorText))
-    //     .then(() => page.readTotal())
-    //     .then((verificationText) => verificationText.txt.should.eventually.include("$198").notify(done))
-    //   })
-    // this.timeout(30000);
-    // it( "Coupon can be searched for by name", function(done){
-    //     this.retries(trys)
-    //     var name  = "test " + page.makeCouponName()
-    //     var recurrence = false;
-    //     var discount = 40;
-    //     var dollars  = true;
-    //     var redemptions  = (Math.floor(Math.random() * 3) + 2)
-    //     var experationDate = page.randomDate();
-    //     var couponCode = page.makeCouponCode();
-    //     var errorText = "\n          Coupon \'"+couponCode+"\' cannot be applied to this order\n        "
-    //     var finalPrice = "$99";
-    //     var discountedPrice = "$" + (99 - discount);
-    //     if(!dollars){
-    //       finalPrice = "$" + ((99 * (discount/100)).toFixed(2));
-    //     }
-    //     page.gotoCouponsScreen()
-    //     .then(() => page.createNewCoupon(name,experationDate['numerical'],"Retail","catigory","description",discount,dollars,"eachLineItem","minAmount",recurrence,redemptions,"Any",couponCode))
-    //     .then(() => page.visit('https://admin.rev-prep.com/coupons'))
-    //     .then(() => page.dismissRingCentralModal())
-    //     .then(() => sleep(2500))
-    //     .then(() => page.searchCoupons(false,false,name,false))
-    //     .then(() => page.readFirstCouponName())
-    //     .then((verificationText) => verificationText.txt.should.eventually.equal(name).notify(done))
-    //   })
-
-    // it( "Coupon can be searched for by couponCode", function(done){
-    //     this.retries(trys)
-    //     var name  = "test " + page.makeCouponName()
-    //     var discount = 40;
-    //     var dollars  = true;
-    //     var recurrence = false;
-    //     var redemptions  = (Math.floor(Math.random() * 3) + 2)
-    //     var experationDate = page.randomDate();
-    //     var couponCode = page.makeCouponCode();
-    //     var errorText = "\n          Coupon \'"+couponCode+"\' cannot be applied to this order\n        "
-    //     var finalPrice = "$99";
-    //     var discountedPrice = "$" + (99 - discount);
-    //     if(!dollars){
-    //       finalPrice = "$" + ((99 * (discount/100)).toFixed(2));
-    //     }
-    //     page.gotoCouponsScreen()
-    //     .then(() => page.createNewCoupon(name,experationDate['numerical'],"Retail","catigory","description",discount,dollars,"eachLineItem","minAmount",recurrence,redemptions,"Any",couponCode))
-    //     .then(() => page.visit('https://admin.rev-prep.com/coupons'))
-    //     .then(() => page.dismissRingCentralModal())
-    //     .then(() => sleep(2500))
-    //     .then(() => page.searchCoupons(false,false,false,couponCode))
-    //     .then(() => page.readFirstCouponName())
-    //     .then((verificationText) => verificationText.txt.should.eventually.equal(name).notify(done))
-    //   })
-    //   this.timeout(120000);
-    //   it( "Coupons with Recurrence is applied to Membership", function(done){
-    //     this.retries(trys)
-    //     var name  = "test " + page.makeCouponName()
-    //     var discount = 40;
-    //     var dollars  = true;
-    //     var redemptions  = false;
-    //     var recurrence  = 3;
-    //     var experationDate = page.randomDate();
-    //     var couponCode = page.makeCouponCode();
-    //     var eachLineItem = false;
-    //     var finalPrice = getFinalPriceMembershipOnly(false,discount,dollars);
-    //     var targetText = "Coupon: "+name+" ($"+discount+".00 off)\n            ";
-
-    //     page.gotoCouponsScreen()
-    //     .then(() => page.createNewCoupon(name,experationDate['numerical'],"Retail","catigory","description",discount,dollars,eachLineItem,"minAmount",recurrence,redemptions,"Any",couponCode))
-    //     .then(() => sleep(500))
-    //     .then(() => startPurchaseMembershipOnlyApplyCoupon(couponCode))
-    //     .then(() => page.readTotal())
-    //     .then((verificationText) => verificationText.txt.should.eventually.include(finalPrice))
-    //     .then(() => completePurchasefromCart())
-    //     .then(() => page.dismissRingCentralModal())
-    //     .then(() => sleep(500))
-    //     .then(() => page.getAppliedCoupon())
-    //     .then((verificationText) => verificationText.txt.should.eventually.include(targetText).notify(done))
-    //   })
-
+    for (var i = couponTestPerams.length - 1; i >= 0; i--) {
+      couponTest (couponTestPerams[i]["Name"],couponTestPerams[i]["Discount"],couponTestPerams[i]["Dollars"],couponTestPerams[i]["redemptions"],couponTestPerams[i]["eachLineItem"]);
+    }
+    this.timeout(120000);
+    it( "Coupons with limited redemptions works properly", function(done){
+      this.retries(trys)
+      var discount = 40;
+      var dollars  = true;
+      var eachLineItem  = false;
+      var recurrence = false;
+      var redemptions  = 2;
+      var experationDate = page.randomDate();
+      var couponCode = page.makeCouponCode();
+      var errorText = "Coupon \'"+couponCode+"\' cannot be applied to this order"
+      var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
+      page.gotoCouponsScreen()
+      .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","Gift Card","description",discount,dollars,eachLineItem,false,recurrence,redemptions,"Any",couponCode))
+      .then(() => useUpRedemptions(redemptions,couponCode,finalPrice))
+      .then(() => sleep(500))
+      .then(() => startPurchaseApplyCoupon(couponCode))
+      .then(() => sleep(2000))
+      .then(() => page.readError())
+      .then((verificationText) => verificationText.txt.should.eventually.include(errorText))
+      .then(() => page.readTotal())
+      .then((verificationText) => verificationText.txt.should.eventually.include("$198").notify(done))
+    })
     
-      function testRestrictedTo (name,restrictedTo,applying,price, i){
-        it( name, function(done){
-          this.retries(trys)
-          page.gotoCouponsScreen()
-          .then(() => {
-            couponName[i] = 'test_'+( makeRandomString(10,"alpha"));
-            discount[i] = 40;
-            dollars[i]  = true;
-            eachLineItem[i]  = false;
-            recurrence[i] = false;
-            redemptions[i]  = 2;
-            experationDate[i] = page.randomDate();
-            couponCode[i] = page.makeCouponCode();
-            finalPrice[i] = getFinalPrice(eachLineItem,discount,dollars); 
-            errorText[i] = "Coupon \'"+couponCode[i]+"\' cannot be applied to this order";
-          })
-          .then(() => page.createNewCoupon(couponName[i],experationDate[i]["numerical"],"Retail","catigory","description",discount[i],dollars[i],eachLineItem[i],"minAmount",recurrence[i],redemptions[i],restrictedTo,couponCode[i]))
-          .then(() => {
-            startMembershipPurchaseApplyCoupon(couponCode[i])
-          })
-          .then(() => sleep(500))
-          .then(() => {
-            if(!applying){
-              sleep(100)
-              .then(() => {
-                readErrorVerificationText[i] = page.readError()
-                readErrorVerificationText[i].txt.should.eventually.include(errorText[i]).notify(done); 
-              })
-            }else{
-              sleep(1000)
-              .then(() => {
-                readTotalVerificationText[i] = page.readTotal()
-                readTotalVerificationText[i].txt.should.eventually.include("$"+(price-discount[i]), "the total was not "+(price-discount[i]) ).notify(done);
-              })
-            }
-          })
-        });
+    this.timeout(30000);
+    it( "Coupon can be searched for by name", function(done){
+      this.retries(trys)
+      var name  = "test " + page.makeCouponName()
+      var recurrence = false;
+      var discount = 40;
+      var dollars  = true;
+      var redemptions  = (Math.floor(Math.random() * 3) + 2)
+      var experationDate = page.randomDate();
+      var couponCode = page.makeCouponCode();
+      var errorText = "\n          Coupon \'"+couponCode+"\' cannot be applied to this order\n        "
+      var finalPrice = "$99";
+      var discountedPrice = "$" + (99 - discount);
+      if(!dollars){
+        finalPrice = "$" + ((99 * (discount/100)).toFixed(2));
       }
+      page.gotoCouponsScreen()
+      .then(() => page.createNewCoupon(name,experationDate['numerical'],"Retail","Gift Card","description",discount,dollars,"eachLineItem",false,recurrence,redemptions,"Any",couponCode))
+      .then(() => page.visit('https://admin.rev-prep.com/coupons'))
+      .then(() => page.dismissRingCentralModal())
+      .then(() => sleep(2500))
+      .then(() => page.searchCoupons(false,false,name,false))
+      .then(() => page.readFirstCouponName())
+      .then((verificationText) => verificationText.txt.should.eventually.equal(name).notify(done))
+    })
+
+    it( "Coupon can be searched for by couponCode", function(done){
+      this.retries(trys)
+      var name  = "test " + page.makeCouponName()
+      var discount = 40;
+      var dollars  = true;
+      var recurrence = false;
+      var redemptions  = (Math.floor(Math.random() * 3) + 2)
+      var experationDate = page.randomDate();
+      var couponCode = page.makeCouponCode();
+      var errorText = "\n          Coupon \'"+couponCode+"\' cannot be applied to this order\n        "
+      var finalPrice = "$99";
+      var discountedPrice = "$" + (99 - discount);
+      if(!dollars){
+        finalPrice = "$" + ((99 * (discount/100)).toFixed(2));
+      }
+      page.gotoCouponsScreen()
+      .then(() => page.createNewCoupon(name,experationDate['numerical'],"Retail","Gift Card","description",discount,dollars,"eachLineItem",false,recurrence,redemptions,"Any",couponCode))
+      .then(() => page.visit('https://admin.rev-prep.com/coupons'))
+      .then(() => page.dismissRingCentralModal())
+      .then(() => sleep(2500))
+      .then(() => page.searchCoupons(false,false,false,couponCode))
+      .then(() => page.readFirstCouponName())
+      .then((verificationText) => verificationText.txt.should.eventually.equal(name).notify(done))
+    })
+
+    this.timeout(120000);
+    it( "Coupons with Recurrence is applied to Membership", function(done){
+      this.retries(trys)
+      var name  = "test " + page.makeCouponName()
+      var discount = 40;
+      var dollars  = true;
+      var redemptions  = false;
+      var recurrence  = 3;
+      var experationDate = page.randomDate();
+      var couponCode = page.makeCouponCode();
+      var eachLineItem = false;
+      var finalPrice = getFinalPriceMembershipOnly(false,discount,dollars);
+      var targetText = "Coupon: "+name+" ($"+discount+".00 off)\n            ";
+
+      page.gotoCouponsScreen()
+      .then(() => page.createNewCoupon(name,experationDate['numerical'],"Retail","Gift Card","description",discount,dollars,eachLineItem,false,recurrence,redemptions,"Any",couponCode))
+      .then(() => sleep(500))
+      .then(() => startPurchaseMembershipOnlyApplyCoupon(couponCode))
+      .then(() => page.readTotal())
+      .then((verificationText) => verificationText.txt.should.eventually.include(finalPrice))
+      .then(() => completePurchasefromCart())
+      .then(() => page.dismissRingCentralModal())
+      .then(() => sleep(500))
+      .then(() => page.getAppliedCoupon())
+      .then((verificationText) => verificationText.txt.should.eventually.include(targetText).notify(done))
+    })
+
+    function testRestrictedTo (name,restrictedTo,applying,price, i){
+      it( name, function(done){
+        this.retries(trys)
+        page.gotoCouponsScreen()
+        .then(() => {
+          couponName[i] = 'test_'+( makeRandomString(10,"alpha"));
+          discount[i] = 40;
+          dollars[i]  = true;
+          eachLineItem[i]  = false;
+          recurrence[i] = false;
+          redemptions[i]  = 2;
+          experationDate[i] = page.randomDate();
+          couponCode[i] = page.makeCouponCode();
+          finalPrice[i] = getFinalPrice(eachLineItem,discount,dollars); 
+          errorText[i] = "Coupon \'"+couponCode[i]+"\' cannot be applied to this order";
+        })
+        .then(() => page.createNewCoupon(couponName[i],experationDate[i]["numerical"],"Retail","Gift Card","description",discount[i],dollars[i],eachLineItem[i],false,recurrence[i],redemptions[i],restrictedTo,couponCode[i]))
+        .then(() => {
+          startMembershipPurchaseApplyCoupon(couponCode[i])
+        })
+        .then(() => sleep(500))
+        .then(() => {
+          if(!applying){
+            sleep(100)
+            .then(() => {
+              readErrorVerificationText[i] = page.readError()
+              readErrorVerificationText[i].txt.should.eventually.include(errorText[i]).notify(done); 
+            })
+          }else{
+            sleep(1000)
+            .then(() => {
+              readTotalVerificationText[i] = page.readTotal()
+              readTotalVerificationText[i].txt.should.eventually.include("$"+(price-discount[i]), "the total was not "+(price-discount[i]) ).notify(done);
+            })
+          }
+        })
+      });
+    }
+
+
 
     var restrictedToOptions = ["Any","Material","Shipping","Tutor Package" ,"Private Tutoring" ,"Semi-Private Tutoring" ,"Special Event" ,"Membership" ,"Group Course" ,"Small Group Course" ,"Value Group Course" ,"Collegewise" ,"Test Prep 101" ,"Independent College Counseling","Executive Functioning" ,"Homework Help" ,"Boot Camp" ,"GMAT" ,"Group Meetings" ,"1-on-1 Meetings" ,"Fee" ,"Workshop" ,"A+ Habits"]
     // var restrictedToOptions = ["Boot Camp",  "Shipping","Membership","Any"]
@@ -372,7 +379,7 @@ function tests(browser){
       }
     }
     this.timeout(30000);
-    // testMembershipWithRestrictedToOptions();
+    testMembershipWithRestrictedToOptions();
   });
 }
 
