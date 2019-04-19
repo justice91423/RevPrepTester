@@ -29,7 +29,7 @@ function tests(browser){
     if(browser=='internet explorer'||browser=='firefox'){
       this.timeout(120000);
     }else{
-      this.timeout(90000);
+      this.timeout(60000);
     }
     
     beforeEach(function(){

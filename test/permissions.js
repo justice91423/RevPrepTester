@@ -1,5 +1,8 @@
 var {Dev,trys,adminBrowserss,Browserss,webdriver,sleep,describe,it,after,before,jquery,chai,chaiJquery,chaiAsPromised,should,sourceFile_credentials,addContext,testImageName} = require('../lib/top')
 
+var By = webdriver.By
+var assert = chai.assert
+
 var Page = require('../lib/base_page');
 var Page = require('../lib/admin_dashboard');
 var Page = require('../lib/admin_dashboard_permissions');
@@ -8,7 +11,6 @@ var Page = require('../lib/admin_employee');
 var Page = require('../lib/admin_dashboard_lead_sources');
 var Page = require('../lib/admin_dashboard_lead_source_page');
 var Page = require('../lib/admin_dashboard_users');
-// var By = webdriver.By
 
 var startingTrys = trys
 
@@ -18,8 +20,6 @@ var permissions_tester_username = sourceFile_credentials.credentials_a['permissi
 var permissions_tester_password = sourceFile_credentials.credentials_a['permissions_tester']['password']
 
 chai.use(chaiAsPromised);
-// var expect = chai.expect
-var assert = chai.assert
 
 var jsdom = require('jsdom');
 
@@ -27,7 +27,6 @@ const { JSDOM } = jsdom;
 const { window } = new JSDOM();
 const { document } = (new JSDOM('')).window;
 global.document = document;
-// var $ = jQuery = require('jquery')(window);
 for (var i = adminBrowserss.length - 1; i >= 0; i--) {
   tests(adminBrowserss[i])
 };
@@ -70,7 +69,6 @@ function tests(browser){
     var permissions = sourceFile.permissions_a;
 
     for (var y = permissions.length - 1; y >= 0; y--) {
-      
       navbarItemTest(permissions[y]["name"],permissions[y]["singleItems"],permissions[y]["sectionsAndItems"],permissions[y]["optionNumber"]);
     }
 
@@ -226,7 +224,7 @@ function tests(browser){
           // .then(() => page.dismissRingCentralModal())
           .then(() => page.findAndOpenEmployee(permissions_tester_username))
           .then(() => page.clickEditedEmplyeeButton())
-          .then(() => page.removeSpoofAdvisorFromWonkaEditEmployeeModal())
+          .then(() => page.removeARoleEditEmployeeModal("Spoof Advisor"))
           .then(() => page.clickUpdateEditEmployeeModal())
           .then(() => page.visit('https://admin.rev-prep.com/logout'))
           .then(() => page.loginAdmin(permissions_tester_username,permissions_tester_password))
@@ -235,8 +233,34 @@ function tests(browser){
           .then((gotten) => assert.lengthOf(gotten, 0, "The Spoof Advisor option is present"))
           .then(() => done())
         });
+
+        it('Removing Operations role removes refund ability',  function(done){
+          this.retries(trys)
+          if(passing==false){
+            this.retries(0)
+            name.should.equal(true, name+' was not set properly in a previous test.  Therefore this test can not be run')
+          }
+          page.loginAdmin(username,password)
+          .then(() => sleep(500))
+          // .then(() => page.dismissRingCentralModal())
+          .then(() => page.findAndOpenEmployee(permissions_tester_username))
+          .then(() => page.clickEditedEmplyeeButton())
+          // .then(() => page.removeSpoofAdvisorFromWonkaEditEmployeeModal())
+          .then(() => page.removeARoleEditEmployeeModal("Operations"))
+          .then(() => page.clickUpdateEditEmployeeModal())
+          .then(() => page.visit('https://admin.rev-prep.com/logout'))
+
+          .then(() => page.loginAdmin(permissions_tester_username,permissions_tester_password))
+          .then(() => sleep(2000))
+          .then(() => page.visit('https://admin.rev-prep.com/refund-requests'))
+
+          .then(() => sleep(5000))
+
+          .then(() => page.driver.findElements(By.xpath('//td[text()="Incomplete"]')))
+          .then((gotten) => assert.lengthOf(gotten, 0, "The refund was not deleted"))
+          .then(done, done)
+        });
       }
-      
     }
   })
 }
