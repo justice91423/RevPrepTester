@@ -8,6 +8,7 @@ var Page = require('../lib/admin_dashboard_new_lead_source_modal');
 var Page = require('../lib/admin_dashboard_CRM');
 var Page = require('../lib/admin_dashboard_advisor_leads');
 var Page = require('../lib/admin_dashboard_advisor_lead_sources');
+var Page = require('../lib/admin_dashboard_advisor_family_search');
 var Page = require('../lib/student_home_page');
 var Page = require('../lib/tasks');
 
@@ -16,12 +17,14 @@ var password = sourceFile_credentials.credentials_a['wonka_tester']['password']
 chai.use(chaiAsPromised);
 var assert = chai.assert;
 
+var famliesPageSelector = require('../lib/admin_dashboard_xpaths.js').famliesPageXpaths;
+
 for (var i = adminBrowserss.length - 1; i >= 0; i--) {
   tests(adminBrowserss[i])
 };
 
 function searchForLead(name,status){
-  return page.clickAdvisorOption("leads")
+  return page.clickAdvisorOption("family-search")
   .then(() => page.clickShowAdvancedFiltersAdvisorLeads())
   .then(() => page.dismissToast())
   .then(() => sleep(5000))
@@ -83,17 +86,18 @@ function tests(browser){
         .then(() => page.fillNewLead(firstName,lastName,false,leadSourceType,courseID,status))
         .then(() => sleep(500))
         .then(() => page.clickCreateButtonNewLeadModal())
-        .then(() => sleep(500))
+        .then(() => sleep(1000))
         .then(() => page.clickXtoCloseCRM())
         .then(() => sleep(500))
-        .then(() => searchForLead(firstName+" "+lastName,status))
+        .then(() => page.clickAdvisorOption("family-search"))
+        .then(() => page.performSearchFamlies(firstName+" "+lastName,false,true,true))
         .then(() => sleep(5000))
         .then(() => {
-          var verificationText = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/crm-leads/div/crm-leads-results/div/div/div/table/tbody/tr/td[2]/a','xpath')
+          var verificationText = page.getInnerHTML(famliesPageSelector.Listing(firstName,lastName,"Parent"),'xpath')
           verificationText.txt.should.eventually.include(firstName+" "+lastName, "The newly created Lead did not appear as the search result");
         })
         .then(() => {
-          var verificationSourceText = page.getInnerHTML('/html/body/ui-view/app/div/div/div/div/ui-view/crm-leads/div/crm-leads-results/div/div/div/table/tbody/tr/td[8]','xpath')
+          var verificationSourceText = page.getInnerHTML(famliesPageSelector.Listing(firstName,lastName,"Source"),'xpath')
           verificationSourceText.txt.should.eventually.equal(leadSourceType, "Lead had the wrong source").notify(done);
         });
       });
@@ -126,9 +130,9 @@ function tests(browser){
       createLeadTest(leadSourceTypes[i], "Pre-Conversation")
     }
 
-    for (var n = leadSourceStatuses.length - 1; n >= 0; n--) {
-      createLeadTest("Gift Card", leadSourceStatuses[n])
-    }
+    // for (var n = leadSourceStatuses.length - 1; n >= 0; n--) {
+    //   createLeadTest("Gift Card", leadSourceStatuses[n])
+    // }
 
     it('Create a lead with VIP', function(done){
       this.retries(trys)
