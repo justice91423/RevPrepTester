@@ -11,6 +11,7 @@ var Page = require('../lib/admin_employee');
 var Page = require('../lib/admin_dashboard_lead_sources');
 var Page = require('../lib/admin_dashboard_lead_source_page');
 var Page = require('../lib/admin_dashboard_users');
+var Page = require('../lib/admin_dashboard_refunds')
 
 var startingTrys = trys
 
@@ -77,6 +78,12 @@ function tests(browser){
       .then(() => page.visit('https://admin.rev-prep.com/users/employees?query=permissions_tester@rainforest.com&per=25&page=1&orderBy=score&orderSort=asc&active=true'))
       .then(() => page.findAndOpenEmployee(permissions_tester_username))
       .then(() => page.clickEditedEmplyeeButton())
+      .then(() => {
+        if(name=="Wonka"){
+          page.setTitleFromEditEmployeeModal("Admin")
+        }
+        sleep(500)
+      })
       .then(() => page.setTitleFromEditEmployeeModal(name))
       .then(() => page.clickUpdateEditEmployeeModal())
       .then(() => page.clickEditedEmplyeeButton())
@@ -236,6 +243,7 @@ function tests(browser){
 
         it('Removing Operations role removes refund ability',  function(done){
           this.retries(trys)
+          this.timeout(60000);
           if(passing==false){
             this.retries(0)
             name.should.equal(true, name+' was not set properly in a previous test.  Therefore this test can not be run')
@@ -256,9 +264,9 @@ function tests(browser){
 
           .then(() => sleep(5000))
 
-          .then(() => page.driver.findElements(By.xpath('//td[text()="Incomplete"]')))
+          .then(() => page.getIncompleteResults())
           .then((gotten) => assert.lengthOf(gotten, 0, "The refund was not deleted"))
-          .then(done, done)
+          .then(() => done())
         });
       }
     }

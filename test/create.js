@@ -86,11 +86,11 @@ function tests(browser){
         .then(() => page.fillNewLead(firstName,lastName,false,leadSourceType,courseID,status))
         .then(() => sleep(500))
         .then(() => page.clickCreateButtonNewLeadModal())
-        .then(() => sleep(1000))
+        .then(() => sleep(2000))
         .then(() => page.clickXtoCloseCRM())
         .then(() => sleep(500))
         .then(() => page.clickAdvisorOption("family-search"))
-        .then(() => page.performSearchFamlies(firstName+" "+lastName,false,true,true))
+        .then(() => page.performSearchFamlies("THIS WAS WHERE THE NAME WAS",false,true,true,{"Search":(firstName+" "+lastName)}))
         .then(() => sleep(5000))
         .then(() => {
           var verificationText = page.getInnerHTML(famliesPageSelector.Listing(firstName,lastName,"Parent"),'xpath')

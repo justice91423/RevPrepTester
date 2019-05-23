@@ -123,8 +123,8 @@ function tests(browser){
         var experationDate = page.randomDate();
         var couponCode = page.makeCouponCode();
         var recurrence = 0;
-        if(!finalPrice){
-          var finalPrice = getFinalPrice(eachLineItem,discount,dollars);
+        if(finalPrice == false){
+          finalPrice = getFinalPrice(eachLineItem,discount,dollars);
         }
         page.gotoCouponsScreen()
         .then(() => page.createNewCoupon("Test",experationDate['numerical'],"Retail","Gift Card","description",discount,dollars,eachLineItem,lineItemMin,recurrence,redemptions,"Any",couponCode))
