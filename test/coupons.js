@@ -347,8 +347,6 @@ function tests(browser){
       });
     }
 
-
-
     var restrictedToOptions = ["Any","Material","Shipping","Tutor Package" ,"Private Tutoring" ,"Semi-Private Tutoring" ,"Special Event" ,"Membership" ,"Group Course" ,"Small Group Course" ,"Value Group Course" ,"Collegewise" ,"Test Prep 101" ,"Independent College Counseling","Executive Functioning" ,"Homework Help" ,"Boot Camp" ,"GMAT" ,"Group Meetings" ,"1-on-1 Meetings" ,"Fee" ,"Workshop" ,"A+ Habits"]
     // var restrictedToOptions = ["Boot Camp",  "Shipping","Membership","Any"]
     // var restrictedToOptions = ["Membership","Any"]
@@ -382,4 +380,3 @@ function tests(browser){
     testMembershipWithRestrictedToOptions();
   });
 }
-
