@@ -1,4 +1,3 @@
-
 var {Dev,trys,adminBrowserss,Browserss,webdriver,sleep,describe,it,after,before,chai,chaiAsPromised,should,sourceFile_credentials,addContext} = require('../lib/top')
 
 var Page = require('../lib/admin_dashboard');
@@ -31,13 +30,6 @@ function searchForLead(name,status){
   .then(() => sleep(5000))
   .then(() => page.enterFiltersAdvisorLeads(name,[status]))
   .then(() => page.clickSearchButtonAdvisorLeads())
-}
-
-function searchForLeadSource(name){
-  return page.clickAdvisorOption("lead-sources")
-  .then(() => page.clickShowAdvancedFiltersAdvisorLeadSources())
-  .then(() => page.enterFiltersAdvisorLeadSources(name))
-  .then(() => page.clickSearchButtonAdvisorLeadSources())
 }
 
 function tests(browser){
@@ -87,11 +79,11 @@ function tests(browser){
         var hoursPurchased = Math.floor(Math.random() * 100) + 20
         var hoursPurchased = 20
         var criterias = {"Search":(firstName+" "+lastName)}
-        // console.log('criteriaToTest[0] ',criteriaToTest[0])
         criterias[criteriaName]=findCriteria
 
         buyAndComeBack(firstName,lastName,hoursPurchased)
         .then(() => page.performSearchFamlies("THIS WAS WHERE THE NAME WAS",false,true,true,criterias))
+        // page.performSearchFamlies("THIS WAS WHERE THE NAME WAS",false,true,true,criterias)
         .then(() => sleep(2000))
 
         .then(() => page.getSearchResultsListings(firstName,lastName,"Parent"))
@@ -111,59 +103,41 @@ function tests(browser){
       });
     }
 
-    // it('Search for a customer by hours left', function(done){
-    //   this.retries(trys)
-
-    //   var firstName = page.randomString(10,"alpha");
-    //   var lastName = page.randomString(10,"alpha");
-    //   var hoursPurchased = Math.floor(Math.random() * 100) + 20
-      
-    //   buyAndComeBack(firstName,lastName,hoursPurchased)
-    //   .then(() => page.performSearchFamlies("THIS WAS WHERE THE NAME WAS",false,false,true,{"Search":(firstName+" "+lastName)}))
-    //   .then(() => sleep(2000))
-
-    //   .then(() => page.getSearchResultsListings(firstName,lastName,"Parent"))
-    //   .then((gotten) => assert.lengthOf(gotten, 1, "The customer ("+firstName+" "+lastName+") did NOT appear in the search results when Customers criteria was checked"))
-
-    //   .then(() => page.visit('https://admin.rev-prep.com/dashboard'))
-    //   .then(() => page.clickAdvisorOption("family-search"))
-    //   .then(() => sleep(2000))
-    //   .then(() => page.performSearchFamlies("THIS WAS WHERE THE NAME WAS",false,true,false,{"Search":(firstName+" "+lastName)}))
-    //   .then(() => page.getSearchResultsListings(firstName,lastName,"Parent"))
-    //   .then((gotten) => assert.lengthOf(gotten, 0, "The customer ("+firstName+" "+lastName+") appeared in the search results when the Customer criteria was unchecked"))
-    //   .then(() => done())
-    // });
-
-
     var testableCriteria = [
-      // "School Direct Referral",
-      // "Non-School Referral",
-      // "Parent Referral",
-      // "Mock Exam",
-      // "Internet Search",
-      // "Initial School Contact",
-      // "Parent Event",
-      ["Revenue","<2080",">2080"],
+      ["Advisor","All Revolution","Unassigned"],
       ["Age","<1",">1"],
-      ["Hours Left","<21",">21"]
+      ["Contact Attempts","Less than 4","1"],
+      
+      ["Contact List Reason","Not on Contact List","On Contact List"],
+      ["Course ID","15817","26047"],
+      // Costomer
+      ["Grade","3rd Grade","2nd Grade"],
+      // ["Home Estimate","2080","2080"],
+      ["Hours Left","<21",">21"],
+      // ["Last NPS","XXX","XXX"],
+      ["Last Touch",">2","<2"],
+      // ["Lead Source","XXX","XXXX],
+      // Leads
+      // ["No Follow-up","<21",">21"],
+      ["Order Source","Admin Dashboard","Subscription Renewal"],
+      // ["Private Tutor(s)","XXX","XXX"],
+      ["Products","Membership","Group Course"],
+      // ["Referral Revenue","<100",">100"],
+      ["Revenue","<2080",">2080"]
+      // ["Search","This is some text","also text"]
+      // ["Source","Campaign","School Direct Referral"],
+      // ["VIP","No","Yes"],
+      // ["Web Sale","<2080",">2080"]
+
     ]
 
-    var leadSourceStatuses = [
-      "Pre-Conversation",
-      "In Conversation",
-      "Not Ready",
-      "Not Interested",
-      "Could Not Reach",
-      "Do Not Contact",
-      "No Sales/Partner Contact"
-    ]
+    // var testableCriteria = [
+    //   ["Leads","Not Ready","All"]
+    // ]
 
     for (var i = testableCriteria.length - 1; i >= 0; i--) {
       testCriteria(testableCriteria[i][0],testableCriteria[i][1],testableCriteria[i][2])
     }
-
-
-
   })
 }
 

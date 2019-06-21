@@ -1,1 +1,8 @@
-env browser=chrome dev=true mocha test --reporter mochawsome
+mocha test --reporter mochawesome --reporter-options showSkipped=true
+
+
+
+env
+dev=true/false
+debug=true/false
+browsers=

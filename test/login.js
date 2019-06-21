@@ -27,7 +27,7 @@ if(Dev){
   var trys = 0
 }
 var Browserss = [
-  'internet explorer',
+  // 'internet explorer',
   'firefox',
   'chrome'
   ];

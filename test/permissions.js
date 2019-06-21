@@ -3,6 +3,10 @@ var {Dev,trys,adminBrowserss,Browserss,webdriver,sleep,describe,it,after,before,
 var By = webdriver.By
 var assert = chai.assert
 
+var Page = require('../lib/admin_dashboard_new_lead_modal');
+var Page = require('../lib/admin_dashboard_course_search');
+var Page = require('../lib/admin_dashboard_course');
+var Page = require('../lib/admin_dashboard_CRM');
 var Page = require('../lib/base_page');
 var Page = require('../lib/admin_dashboard');
 var Page = require('../lib/admin_dashboard_permissions');
@@ -19,6 +23,7 @@ var username = sourceFile_credentials.credentials_a['wonka_tester']['username']
 var password = sourceFile_credentials.credentials_a['wonka_tester']['password']
 var permissions_tester_username = sourceFile_credentials.credentials_a['permissions_tester']['username']
 var permissions_tester_password = sourceFile_credentials.credentials_a['permissions_tester']['password']
+var usersFullName = sourceFile_credentials.credentials_a['permissions_tester']['firstName']+" "+sourceFile_credentials.credentials_a['permissions_tester']['lastName']
 
 chai.use(chaiAsPromised);
 
@@ -31,6 +36,8 @@ global.document = document;
 for (var i = adminBrowserss.length - 1; i >= 0; i--) {
   tests(adminBrowserss[i])
 };
+
+
 
 function tests(browser){
   describe('Admin Dashboard permission scenarios - '+browser, function(){
@@ -46,7 +53,7 @@ function tests(browser){
       page.visit('https://admin.rev-prep.com/login');
     });
     afterEach(function(){
-      if (this.currentTest.state == 'failed') {
+      if (this.currentTest.state == 'failed' && this.currentTest.title.includes(' as the users Role')) {
         if(permissionsSettingsTest){
           passing = false;
           permissionsSettingsTest = false;
@@ -67,10 +74,14 @@ function tests(browser){
     });
 
     var sourceFile = require('../lib/permissions_array.js');
-    var permissions = sourceFile.permissions_a;
+    var permissions = sourceFile.permissions_roles;
+
+    // for (var y = permissions.length - 1; y >= 0; y--) {
+    //   navbarItemTest(permissions[y]["name"],permissions[y]["singleItems"],permissions[y]["sectionsAndItems"],permissions[y]["optionNumber"]);
+    // }
 
     for (var y = permissions.length - 1; y >= 0; y--) {
-      navbarItemTest(permissions[y]["name"],permissions[y]["singleItems"],permissions[y]["sectionsAndItems"],permissions[y]["optionNumber"]);
+      navbarItemTest(permissions[y]);
     }
 
     function setTitle(name){
@@ -90,44 +101,60 @@ function tests(browser){
       return ret
     }
 
-    function navbarItemTest(name,singleItems,sectionsAndItems,optionNumber){
+    function setBasicAdmin(){
+      var ret = sleep(500)
+      .then(() => page.visit('https://admin.rev-prep.com/users/employees?query=permissions_tester@rainforest.com&per=25&page=1&orderBy=score&orderSort=asc&active=true'))
+      .then(() => page.findAndOpenEmployee(permissions_tester_username))
+      .then(() => page.clickEditedEmplyeeButton())
+      .then(() => page.setTitleFromEditEmployeeModal("Wonka"))
+      .then(() => sleep(500))
+      .then(() => page.setTitleFromEditEmployeeModal("Admin"))
+      // .then(() => page.clickUpdateEditEmployeeModal())
+      return ret
+    }
+
+    // function navbarItemTest(name,singleItems,sectionsAndItems,optionNumber){
+
+    function navbarItemTest(role){
       
-      it('Set '+name+' as the users Title',  function(done){
+      it('Set '+role.name+' as the users Role',  function(done){
         passing = true;
         permissionsSettingsTest = true;
         this.retries(trys)
         page.loginAdmin(username,password)
         // .then(() => page.dismissRingCentralModal())
-        .then(() => setTitle(name))
-
-        .then(() => page.checkTitleFromEditEmployeeModal(name))
+        .then(() => setBasicAdmin())
+        .then(() => page.addARoleEditEmployeeModal(role.name))
+        .then(() => page.clickUpdateEditEmployeeModal())
+        .then(() => page.clickEditedEmplyeeButton())
+        .then(() => page.checkTitleFromEditEmployeeModal("Admin"))
         .then((titleSelected) => {
           // console.log("titleSelected ",titleSelected.sel);
           page.debug("Return from checkTitleFromEditEmployeeModal() = "+titleSelected.sel)
-          titleSelected.sel.should.equal('true',name+" is not set as employee title");
+          titleSelected.sel.should.equal('true',role.name+" is not set as employee title");
         })
         .then(() => done())
       });
       
-      it(name+' role provides correct Navbar items', function(done){
+      it(role.name+' role provides correct Navbar items', function(done){
         this.retries(trys)
         if(passing==false){
           this.retries(0);
-          name.should.equal(true, name+' was not set properly.  This test can not be run');
+          role.name.should.equal(true, role.name+' was not set properly.  This test can not be run');
         }
         page.loginAdmin(permissions_tester_username,permissions_tester_password)
         var itemCounter = 3;
         var singleItemsVerificationTexts={};
-        for (var i = singleItems.length - 1; i >= 0; i--) {
-          singleItemsVerificationTexts[singleItems[i]] = page.checkNavBarItem(i);
-          singleItemsVerificationTexts[singleItems[i]].txt.should.eventually.equal(''+singleItems[i]+'' , singleItems[i]+' is not present on the navbar');
+        for (var i = role.singleItems.length - 1; i >= 0; i--) {
+          singleItemsVerificationTexts[role.singleItems[i]] = page.checkNavBarItem(i);
+          singleItemsVerificationTexts[role.singleItems[i]].txt.should.eventually.equal(''+role.singleItems[i]+'' , role.singleItems[i]+' is not present on the navbar');
         };
         var headerVerificationTexts={};
-        for (var i = sectionsAndItems.length - 1; i >= 0; i--) {
-          var header = sectionsAndItems[i]["header"];
+        for (var i = role.sectionsAndItems.length - 1; i >= 0; i--) {
+          var header = role.sectionsAndItems[i]["header"];
           headerVerificationTexts[header] = page.checkSectionHeader(i+1);
           headerVerificationTexts[header].txt.should.eventually.equal(header, header+' is not present on the navbar');
-          var items = sectionsAndItems[i]["items"];
+          var items = role.sectionsAndItems[i]["items"];
           var itemVerificationTexts={};
           var enoughItems={};
           page.openSection(i+1);
@@ -142,133 +169,173 @@ function tests(browser){
         }
       });
 
-      var verbs = ["can NOT","can"]
-
-      for (var ii = sectionsAndItems.length - 1; ii >= 0; ii--) {
-        var items = sectionsAndItems[ii]["items"];
-        for (var xx = items.length - 1; xx >= 0; xx--) {
-          if(items[xx]=="Lead Sources"){
-            if(name=="Operations"||name=="Wonka"){
-              var advisorToggleEditButtonsCount = 1
-              var closerToggleEditButtonsCount = 1
-              var statusToggleEditButtonsCount = 1
-            }else if(name=="Advising Manager"||name=="Director of Academic Advising"){
-              var advisorToggleEditButtonsCount = 1
-              var closerToggleEditButtonsCount = 0
-              var statusToggleEditButtonsCount = 0
-            }else{
-              var advisorToggleEditButtonsCount = 0
-              var closerToggleEditButtonsCount = 0
-              var statusToggleEditButtonsCount = 0
-            }
-            // https://revolutionprep.atlassian.net/browse/OD-4436
-            it(name+" "+verbs[advisorToggleEditButtonsCount]+" edit the Advisor on the Lead Source page", function(done){
-              this.retries(trys)
-              if(passing==false){
-                this.retries(0)
-                name.should.equal(true, name+' was not set properly.  This test can not be run')
-              }
-              page.loginAdmin(permissions_tester_username,permissions_tester_password)
-              .then(() => sleep(5000))
-              .then(() => page.visit('https://admin.rev-prep.com/lead-sources?searchType=advanced&page=1&per=25&employeeId=all&closerId=all&idType=All%20Revolution&currentYearRevenueScope=greater%20than'))
-              .then(() => page.clickFirstLeadSource())
-              .then(() => sleep(1000))
-              .then(() => page.mouseOverAdvisor())
-              .then(() => sleep(200))
-              .then(() => page.getToggleEditButtons())
-              .then((gotten) => assert.lengthOf(gotten, advisorToggleEditButtonsCount, name+" "+verbs[advisorToggleEditButtonsCount]+" edit Advisor on lead source page"))
-              .then(() => done())
-            });
-
-            it(name+" "+verbs[closerToggleEditButtonsCount]+" edit the Closer on the Lead Source page", function(done){
-              this.retries(trys)
-              if(passing==false){
-                this.retries(0)
-                name.should.equal(true, name+' was not set properly.  This test can not be run')
-              }
-              page.loginAdmin(permissions_tester_username,permissions_tester_password)
-              .then(() => sleep(5000))
-              .then(() => page.visit('https://admin.rev-prep.com/lead-sources?searchType=advanced&page=1&per=25&employeeId=all&closerId=all&idType=All%20Revolution&currentYearRevenueScope=greater%20than'))
-              .then(() => page.clickFirstLeadSource())
-              .then(() => sleep(1000))
-              .then(() => page.mouseOverCloser())
-              .then(() => sleep(200))
-              .then(() => page.getToggleEditButtons())
-              .then((gotten) => assert.lengthOf(gotten, closerToggleEditButtonsCount, name+" "+verbs[closerToggleEditButtonsCount]+" edit Closer on lead source page"))
-              .then(() => done())
-            });
-
-            it(name+" "+verbs[statusToggleEditButtonsCount]+" edit the Status on the Lead Source page", function(done){
-              this.retries(trys)
-              if(passing==false){
-                this.retries(0)
-                name.should.equal(true, name+' was not set properly.  This test can not be run')
-              }
-              page.loginAdmin(permissions_tester_username,permissions_tester_password)
-              .then(() => sleep(5000))
-              .then(() => page.visit('https://admin.rev-prep.com/lead-sources?searchType=advanced&page=1&per=25&employeeId=all&closerId=all&idType=All%20Revolution&currentYearRevenueScope=greater%20than'))
-              .then(() => page.clickFirstLeadSource())
-              .then(() => sleep(1000))
-              .then(() => page.mouseOverStatus())
-              .then(() => sleep(200))
-              .then(() => page.getToggleEditButtons())
-              .then((gotten) => assert.lengthOf(gotten, closerToggleEditButtonsCount, name+" "+verbs[statusToggleEditButtonsCount]+" edit Closer on lead source page"))
-              .then(() => done())
-            });
-          }
+      if (role.name == "Spoof Advisor"){
+        var spoofTestName= role.name+" adds ability to spoof"
+        var spoofOptions = 1
+        var not = " NOT"
+      }else{
+        var spoofTestName= role.name+" does not add ability to spoof"
+        var spoofOptions = 0
+        var not = ""
+      }
+      it(spoofTestName,  function(done){
+        this.retries(trys)
+        if(passing==false){
+          this.retries(0)
+          role.name.should.equal(true, role.name+' was not set properly in a previous test.  Therefore this test can not be run')
         }
-      }
+        page.loginAdmin(permissions_tester_username,permissions_tester_password)
+        .then(() => page.clickUserNameAdminDashboard(usersFullName))
+        .then(() => page.getSpoofAdvisorOptions())
+        .then((gotten) => assert.lengthOf(gotten, spoofOptions, "The Spoof Advisor option is"+not+" present"))
+        .then(() => done())
+      });
+      
 
-      if(name=="Wonka"){
-        it('Removing Spoof Advisor role removes spoof ability',  function(done){
+      if (role.sectionsAndItems[0].items.includes("Lead Sources")){
+        if(role.setLeadSourceAdvisor && role.setLeadSourceCloser){
+          var testname = role.name+" can edit the Advisor or Closer on the Lead Source page"
+        }
+        if(role.setLeadSourceAdvisor && !role.setLeadSourceCloser){
+          var testname = role.name+" can edit the Advisor but not the Closer on the Lead Source page"
+        }
+        if(!role.setLeadSourceAdvisor && role.setLeadSourceCloser){
+          var testname = role.name+" can not edit the Advisor but can edit the Closer on the Lead Source page"
+        }
+        if(!role.setLeadSourceAdvisor && !role.setLeadSourceCloser){
+          var testname = role.name+" can not edit the Advisor or the Closer on the Lead Source page"
+        }
+        it(testname, function(done){
           this.retries(trys)
           if(passing==false){
             this.retries(0)
-            name.should.equal(true, name+' was not set properly in a previous test.  Therefore this test can not be run')
+            role.name.should.equal(true,role. name+' was not set properly.  This test can not be run')
           }
-          page.loginAdmin(username,password)
-          .then(() => sleep(500))
-          // .then(() => page.dismissRingCentralModal())
-          .then(() => page.findAndOpenEmployee(permissions_tester_username))
-          .then(() => page.clickEditedEmplyeeButton())
-          .then(() => page.removeARoleEditEmployeeModal("Spoof Advisor"))
-          .then(() => page.clickUpdateEditEmployeeModal())
-          .then(() => page.visit('https://admin.rev-prep.com/logout'))
-          .then(() => page.loginAdmin(permissions_tester_username,permissions_tester_password))
-          .then(() => page.clickUserNameAdminDashboard())
-          .then(() => page.getSpoofAdvisorOptions())
-          .then((gotten) => assert.lengthOf(gotten, 0, "The Spoof Advisor option is present"))
-          .then(() => done())
-        });
-
-        it('Removing Operations role removes refund ability',  function(done){
-          this.retries(trys)
-          this.timeout(60000);
-          if(passing==false){
-            this.retries(0)
-            name.should.equal(true, name+' was not set properly in a previous test.  Therefore this test can not be run')
-          }
-          page.loginAdmin(username,password)
-          .then(() => sleep(500))
-          // .then(() => page.dismissRingCentralModal())
-          .then(() => page.findAndOpenEmployee(permissions_tester_username))
-          .then(() => page.clickEditedEmplyeeButton())
-          // .then(() => page.removeSpoofAdvisorFromWonkaEditEmployeeModal())
-          .then(() => page.removeARoleEditEmployeeModal("Operations"))
-          .then(() => page.clickUpdateEditEmployeeModal())
-          .then(() => page.visit('https://admin.rev-prep.com/logout'))
-
-          .then(() => page.loginAdmin(permissions_tester_username,permissions_tester_password))
-          .then(() => sleep(2000))
-          .then(() => page.visit('https://admin.rev-prep.com/refund-requests'))
-
+          page.loginAdmin(permissions_tester_username,permissions_tester_password)
           .then(() => sleep(5000))
+          .then(() => page.visit('https://admin.rev-prep.com/lead-sources?searchType=advanced&page=1&per=25&employeeId=all&closerId=all&idType=All%20Revolution&currentYearRevenueScope=greater%20than'))
+          .then(() => page.clickFirstLeadSource())
+          .then(() => sleep(1000))
+          // .then(() => page.mouseOverAdvisor())
+          // .then(() => sleep(200))
+          .then(() => {
 
-          .then(() => page.getIncompleteResults())
-          .then((gotten) => assert.lengthOf(gotten, 0, "The refund was not deleted"))
+            if(role.setLeadSourceAdvisor){
+              page.mouseOverAdvisor()
+              .then(() => sleep(200))
+              .then(() => page.getToggleEditButtons())
+              .then((gottenLead) => assert.lengthOf(gottenLead, 1, role.name+" can NOT edit Advisor on lead source page"))
+            }
+            sleep(200)
+          })
+          .then(() => {
+            if(role.setLeadSourceCloser){
+              page.mouseOverCloser()
+              .then(() => sleep(200))
+              .then(() => page.getToggleEditButtons())
+              .then((gottenCloser) => assert.lengthOf(gottenCloser, 1, role.name+" can NOT edit Closer on lead source page"))
+            }
+            sleep(200)
+          })
+          // .then(() => page.getToggleEditButtons())
+          // .then((gotten) => assert.lengthOf(gotten, advisorToggleEditButtonsCount, name+" "+verbs[advisorToggleEditButtonsCount]+" edit Advisor on lead source page"))
+          // .then(() => done())
+          .then(() => {
+            if(!role.setLeadSourceAdvisor){
+              page.mouseOverAdvisor()
+              .then(() => sleep(200))
+              .then(() => page.getToggleEditButtons())
+              .then((gottenLead) => assert.lengthOf(gottenLead, 0, role.name+" can edit Advisor on lead source page"))
+            }
+            sleep(200)
+          })
+          .then(() => {
+            if(!role.setLeadSourceCloser){
+
+              page.mouseOverCloser()
+              .then(() => sleep(200))
+              .then(() => page.getToggleEditButtons())
+              .then((gottenCloser) => assert.lengthOf(gottenCloser, 0, role.name+" can edit Closer on lead source page"))
+            }
+            sleep(200)
+          })
           .then(() => done())
         });
       }
+
+      if(role.setLeadAdvisor){
+        it(role.name +' can edit Advisor on newly created lead', function(done){
+          this.retries(trys)
+          if(passing==false){
+            this.retries(0)
+            role.name.should.equal(true,role.name+' was not set properly.  This test can not be run')
+          }
+          var firstName = page.randomString(10,"alpha");
+          var lastName = page.randomString(10,"alpha");
+          page.loginAdmin(permissions_tester_username,permissions_tester_password)
+          .then(() => sleep(5000))
+          .then(() => page.clickCreateOption(1))
+          .then(() => page.fillNewLead(firstName,lastName,false,"Gift Card","nothing","Pre-Conversation"))
+          .then(() => sleep(500))
+          .then(() => page.clickCreateButtonNewLeadModal())
+          .then(() => sleep(2000))
+
+          .then(() => page.mouseOverAdvisorCRM())
+          .then(() => sleep(200))
+          .then(() => page.getToggleEditAdvisorButtons())
+          .then((gotten) => assert.lengthOf(gotten, 1, role.name+" can NOT edit Advisor on Lead CRM"))
+          .then(() => done())
+        });
+      }
+
+      if(!role.setLeadAdvisor){
+        it(role.name +' can NOT edit Advisor on newly created lead', function(done){
+          this.retries(trys)
+          if(passing==false){
+            this.retries(0)
+            role.name.should.equal(true,role. name+' was not set properly.  This test can not be run')
+          }
+          var firstName = page.randomString(10,"alpha");
+          var lastName = page.randomString(10,"alpha");
+          page.loginAdmin(permissions_tester_username,permissions_tester_password)
+          .then(() => sleep(5000))
+          .then(() => page.clickCreateOption(1))
+          .then(() => page.fillNewLead(firstName,lastName,false,"Gift Card","nothing","Pre-Conversation"))
+          .then(() => sleep(500))
+          .then(() => page.clickCreateButtonNewLeadModal())
+          .then(() => sleep(2000))
+          .then(() => page.mouseOverAdvisorCRM())
+          .then(() => sleep(200))
+          .then(() => page.getToggleEditAdvisorButtons())
+          .then((gotten) => assert.lengthOf(gotten, 0, role.name+" can edit Advisor on Lead CRM"))
+          .then(() => done())
+        });
+      }
+
+      if(role.batchEnroll){
+        it(role.name +' can batch enroll', function(done){
+          this.retries(trys)
+          if(passing==false){
+            this.retries(0)
+            role.name.should.equal(true,role. name+' was not set properly.  This test can not be run')
+          }
+
+
+          page.loginAdmin(permissions_tester_username,permissions_tester_password)
+          .then(() => sleep(5000))
+          .then(() => page.visit('https://admin.rev-prep.com/courses'))
+          .then(() => sleep(500))
+          .then(() => page.clickFirstCourseResult())
+          .then(() => sleep(2000))
+          .then(() => page.clickActionsButton("Batch Enroll"))
+          .then(() => sleep(200))
+          .then(() => page.getToggleEditAdvisorButtons())
+          var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/batch-enroll/div[1]/div/h4','xpath');
+          verificationText.txt.should.eventually.contain(' Batch Enroll ').notify(done);
+        });
+      }
+
+
     }
   })
 }
