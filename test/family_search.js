@@ -33,7 +33,7 @@ function searchForLead(name,status){
 }
 
 function tests(browser){
-  describe('Admin Dashboard Create Button scenarios - '+browser, function(){
+  describe('Admin Dashboard Family Search scenarios - '+browser, function(){
     // this.timeout(20000);
     if(browser=='internet explorer'){
       this.timeout(90000);
@@ -44,7 +44,7 @@ function tests(browser){
     beforeEach(function(){
       page = new Page(browser);
       page.driver.manage().window().setPosition(0, 0);
-      page.driver.manage().window().setSize(1600,1080);
+      page.driver.manage().window().setSize(1600,1200);
       page.visit('https://admin.rev-prep.com/login');
       page.loginAdmin(username,password)
       .then(() => sleep(5000))
@@ -62,7 +62,7 @@ function tests(browser){
 
     function buyAndComeBack(firstName,lastName,hoursPurchased){
       return page.visit('https://enroll.rev-prep.com/cart/tutor-packages')
-        
+        .then(() => sleep(2000))
         .then(() => page.addPtHoursToCart("PSAT", "Advanced", 3, hoursPurchased, 99, true, true))
         .then(() => page.completePurchaseFromCart(firstName,lastName))
         .then(() => page.visit('https://admin.rev-prep.com/dashboard'))
@@ -78,27 +78,29 @@ function tests(browser){
         var lastName = page.randomString(10,"alpha");
         var hoursPurchased = Math.floor(Math.random() * 100) + 20
         var hoursPurchased = 20
-        var criterias = {"Search":(firstName+" "+lastName)}
-        criterias[criteriaName]=findCriteria
+        var findableCriterias = {"Search":(firstName+" "+lastName)}
+        var notFindableCriterias = {"Search":(firstName+" "+lastName)}
+        findableCriterias[criteriaName]=findCriteria
+        notFindableCriterias[criteriaName]=noFindCriteria
 
         buyAndComeBack(firstName,lastName,hoursPurchased)
-        .then(() => page.performSearchFamlies("THIS WAS WHERE THE NAME WAS",false,true,true,criterias))
+        .then(() => page.performSearchFamlies("THIS WAS WHERE THE NAME WAS",false,true,true,findableCriterias))
         // page.performSearchFamlies("THIS WAS WHERE THE NAME WAS",false,true,true,criterias)
         .then(() => sleep(2000))
 
         .then(() => page.getSearchResultsListings(firstName,lastName,"Parent"))
-        .then((gotten) => assert.lengthOf(gotten, 1, "The customer ("+firstName+" "+lastName+") did NOT appear in the search results when the "+criteriaName+" criteria was set to include the number of hours the customer purchased ("+hoursPurchased+")"))
+        .then((gotten) => assert.lengthOf(gotten, 1, "The customer ("+firstName+" "+lastName+") did NOT appear in the search results when the "+criteriaName+" criteria was set to ("+findCriteria+")"))
 
         .then(() => page.visit('https://admin.rev-prep.com/dashboard'))
         .then(() => page.clickAdvisorOption("family-search"))
         .then(() => sleep(2000))
         .then(() =>{ 
-          criterias[criteriaName]=noFindCriteria
-          page.performSearchFamlies("THIS WAS WHERE THE NAME WAS",false,true,true,criterias)
+          // criterias[criteriaName]=noFindCriteria
+          page.performSearchFamlies("THIS WAS WHERE THE NAME WAS",false,true,true,notFindableCriterias)
         })
         .then(() => sleep(2000))
         .then(() => page.getSearchResultsListings(firstName,lastName,"Parent"))
-        .then((gotten) => assert.lengthOf(gotten, 0, "The customer ("+firstName+" "+lastName+") appeared in the search results when the "+criteriaName+" criteria was set to search for more hours than the customer purchased ("+hoursPurchased+")"))
+        .then((gotten) => assert.lengthOf(gotten, 0, "The customer ("+firstName+" "+lastName+") appeared in the search results when the "+criteriaName+" criteria was set to ("+noFindCriteria+")"))
         .then(() => done())
       });
     }
@@ -124,6 +126,7 @@ function tests(browser){
       ["Products","Membership","Group Course"],
       // ["Referral Revenue","<100",">100"],
       ["Revenue","<2080",">2080"]
+      // ["School Type","XXX","XXX"]
       // ["Search","This is some text","also text"]
       // ["Source","Campaign","School Direct Referral"],
       // ["VIP","No","Yes"],
