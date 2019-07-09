@@ -37,8 +37,6 @@ for (var i = adminBrowserss.length - 1; i >= 0; i--) {
   tests(adminBrowserss[i])
 };
 
-
-
 function tests(browser){
   describe('Admin Dashboard permission scenarios - '+browser, function(){
     this.timeout(30000);

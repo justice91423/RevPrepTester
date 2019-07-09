@@ -1,5 +1,4 @@
 if(process.env.dev=="true"){
-    // env dev=true mocha test/;
   Dev = true;
    console.log("This test suite is running in Development Mode")
 }else{

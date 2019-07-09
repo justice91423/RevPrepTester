@@ -4,6 +4,7 @@ You may also want to install Mocha globally so you will only need to type "mocha
 
 To start full test run through with reporting...
 mocha test --reporter mochawesome --reporter-options showSkipped=true
+or use the start.bat file.
 
 Specific test suites can be run by naming them after "test/"
 Example: "mocha test/coupons.js ..."

@@ -104,115 +104,115 @@ function tests(browser){
       });
     };
 
-    // var leadSourceTypes = [
-    //   "School Direct Referral",
-    //   "Non-School Referral",
-    //   "Parent Referral",
-    //   "Mock Exam",
-    //   "Internet Search",
-    //   "Initial School Contact",
-    //   "Parent Event",
-    //   "Seminar/Workshop",
-    //   "Gift Card",
-    //   "Non-Gift Card Offer"
-    // ]
+    var leadSourceTypes = [
+      "School Direct Referral",
+      "Non-School Referral",
+      "Parent Referral",
+      "Mock Exam",
+      "Internet Search",
+      "Initial School Contact",
+      "Parent Event",
+      "Seminar/Workshop",
+      "Gift Card",
+      "Non-Gift Card Offer"
+    ]
 
-    // var leadSourceStatuses = [
-    //   "Pre-Conversation",
-    //   "In Conversation",
-    //   "Not Ready",
-    //   "Not Interested",
-    //   "Could Not Reach",
-    //   "Do Not Contact",
-    //   "No Sales/Partner Contact"
-    // ]
+    var leadSourceStatuses = [
+      "Pre-Conversation",
+      "In Conversation",
+      "Not Ready",
+      "Not Interested",
+      "Could Not Reach",
+      "Do Not Contact",
+      "No Sales/Partner Contact"
+    ]
 
-    // for (var i = leadSourceTypes.length - 1; i >= 0; i--) {
-    //   createLeadTest(leadSourceTypes[i], "Pre-Conversation")
+    for (var i = leadSourceTypes.length - 1; i >= 0; i--) {
+      createLeadTest(leadSourceTypes[i], "Pre-Conversation")
+    }
+
+    // for (var n = leadSourceStatuses.length - 1; n >= 0; n--) {
+    //   createLeadTest("Gift Card", leadSourceStatuses[n])
     // }
 
-    // // for (var n = leadSourceStatuses.length - 1; n >= 0; n--) {
-    // //   createLeadTest("Gift Card", leadSourceStatuses[n])
-    // // }
+    it('Create a lead with VIP', function(done){
+      this.retries(trys)
+      page.clickCreateOption(1)
+      .then(() => page.fillNewLead())
+      .then(() => page.toggleVIPNewLeadModal())
+      .then(() => page.clickCreateButtonNewLeadModal())
+      .then(() => sleep(5000))
+      .then(() => page.getDiamonds())
+      .then((diamonds) => assert.lengthOf(diamonds, 1, "The diamond did not appear properly"))
+      .then(() => done())
+    });
 
-    // it('Create a lead with VIP', function(done){
-    //   this.retries(trys)
-    //   page.clickCreateOption(1)
-    //   .then(() => page.fillNewLead())
-    //   .then(() => page.toggleVIPNewLeadModal())
-    //   .then(() => page.clickCreateButtonNewLeadModal())
-    //   .then(() => sleep(5000))
-    //   .then(() => page.getDiamonds())
-    //   .then((diamonds) => assert.lengthOf(diamonds, 1, "The diamond did not appear properly"))
-    //   .then(() => done())
-    // });
+    it('Create a lead with a taken email', function(done){
+      this.retries(trys)
+      page.clickCreateOption(1)
+      .then(() => page.fillNewLead( false, false,username, "", ""))
+      .then(() => {
+        var verificationText = page.getErrorTextNewLeadModal()
+        verificationText.txt.should.eventually.include("This email is already taken!", "The error for using a taken email did not appear properly").notify(done);
+      })
+    });
 
-    // it('Create a lead with a taken email', function(done){
-    //   this.retries(trys)
-    //   page.clickCreateOption(1)
-    //   .then(() => page.fillNewLead( false, false,username, "", ""))
-    //   .then(() => {
-    //     var verificationText = page.getErrorTextNewLeadModal()
-    //     verificationText.txt.should.eventually.include("This email is already taken!", "The error for using a taken email did not appear properly").notify(done);
-    //   })
-    // });
+    it('Create a lead with a student', function(done){
+      this.retries(trys)
+      var firstName = page.randomString(10,"alpha");
+      var lastName = page.randomString(10,"alpha");
+      var studentFirstName = page.randomString(10,"alpha");
+      var studentLastName = page.randomString(10,"alpha");
+      page.clickCreateOption(1)
+      .then(() => page.fillNewLead(firstName,lastName))
+      .then(() => page.clickAddStudentNewLeadModal())
+      .then(() => page.fillStudentNewLeadModal(1,studentFirstName,studentLastName))
+      .then(() => page.clickCreateButtonNewLeadModal())
+      .then(() => sleep(5000))
+      .then(() => page.getDiamonds())
+      .then(() => {
+        var studentVerificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[2]/div[1]/div[1]/div[1]/div/div/a','xpath')
 
-    // it('Create a lead with a student', function(done){
-    //   this.retries(trys)
-    //   var firstName = page.randomString(10,"alpha");
-    //   var lastName = page.randomString(10,"alpha");
-    //   var studentFirstName = page.randomString(10,"alpha");
-    //   var studentLastName = page.randomString(10,"alpha");
-    //   page.clickCreateOption(1)
-    //   .then(() => page.fillNewLead(firstName,lastName))
-    //   .then(() => page.clickAddStudentNewLeadModal())
-    //   .then(() => page.fillStudentNewLeadModal(1,studentFirstName,studentLastName))
-    //   .then(() => page.clickCreateButtonNewLeadModal())
-    //   .then(() => sleep(5000))
-    //   .then(() => page.getDiamonds())
-    //   .then(() => {
-    //     var studentVerificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[2]/div[1]/div[1]/div[1]/div/div/a','xpath')
+        studentVerificationText.txt.should.eventually.include(studentFirstName+" "+studentLastName, "The students name ("+studentFirstName+" "+studentLastName+") did not appear properly")
+      })
+      .then(() => {
+        var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[1]/div/h4/div/span[1]','xpath')
+        verificationText.txt.should.eventually.include(firstName+" "+lastName, "The parents name ("+firstName+" "+lastName+") did not appear properly").notify(done);
+      })
+    });
 
-    //     studentVerificationText.txt.should.eventually.include(studentFirstName+" "+studentLastName, "The students name ("+studentFirstName+" "+studentLastName+") did not appear properly")
-    //   })
-    //   .then(() => {
-    //     var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[1]/div/h4/div/span[1]','xpath')
-    //     verificationText.txt.should.eventually.include(firstName+" "+lastName, "The parents name ("+firstName+" "+lastName+") did not appear properly").notify(done);
-    //   })
-    // });
+    it('Create a lead with two students', function(done){
+      this.retries(trys)
+      var firstName = page.randomString(10,"alpha");
+      var lastName = page.randomString(10,"alpha");
+      var studentFirstName = page.randomString(10,"alpha");
+      var studentLastName = page.randomString(10,"alpha");
+      var student2FirstName = page.randomString(10,"alpha");
+      var student2LastName = page.randomString(10,"alpha");
+      page.clickCreateOption(1)
+      .then(() => page.fillNewLead(firstName,lastName))
+      .then(() => page.clickAddStudentNewLeadModal())
+      .then(() => page.fillStudentNewLeadModal(1,studentFirstName,studentLastName))
+      .then(() => page.clickAddStudentNewLeadModal())
+      .then(() => page.fillStudentNewLeadModal(2,student2FirstName,student2LastName))
+      .then(() => page.clickCreateButtonNewLeadModal())
+      .then(() => sleep(5000))
+      .then(() => page.getDiamonds())
+      .then(() => {
+        var studentVerificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[2]/div[1]/div[1]/div[1]/div/div/a','xpath')
 
-    // it('Create a lead with two students', function(done){
-    //   this.retries(trys)
-    //   var firstName = page.randomString(10,"alpha");
-    //   var lastName = page.randomString(10,"alpha");
-    //   var studentFirstName = page.randomString(10,"alpha");
-    //   var studentLastName = page.randomString(10,"alpha");
-    //   var student2FirstName = page.randomString(10,"alpha");
-    //   var student2LastName = page.randomString(10,"alpha");
-    //   page.clickCreateOption(1)
-    //   .then(() => page.fillNewLead(firstName,lastName))
-    //   .then(() => page.clickAddStudentNewLeadModal())
-    //   .then(() => page.fillStudentNewLeadModal(1,studentFirstName,studentLastName))
-    //   .then(() => page.clickAddStudentNewLeadModal())
-    //   .then(() => page.fillStudentNewLeadModal(2,student2FirstName,student2LastName))
-    //   .then(() => page.clickCreateButtonNewLeadModal())
-    //   .then(() => sleep(5000))
-    //   .then(() => page.getDiamonds())
-    //   .then(() => {
-    //     var studentVerificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[2]/div[1]/div[1]/div[1]/div/div/a','xpath')
+        studentVerificationText.txt.should.eventually.include(studentFirstName+" "+studentLastName, "The students name ("+studentFirstName+" "+studentLastName+") did not appear properly")
+      })
+      .then(() => {
+        var studentVerificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[2]/div[1]/div[1]/div[1]/div/div[2]/a','xpath')
 
-    //     studentVerificationText.txt.should.eventually.include(studentFirstName+" "+studentLastName, "The students name ("+studentFirstName+" "+studentLastName+") did not appear properly")
-    //   })
-    //   .then(() => {
-    //     var studentVerificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[2]/div[1]/div[1]/div[1]/div/div[2]/a','xpath')
-
-    //     studentVerificationText.txt.should.eventually.include(student2FirstName+" "+student2LastName, "The students name ("+student2FirstName+" "+student2LastName+") did not appear properly")
-    //   })
-    //   .then(() => {
-    //     var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[1]/div/h4/div/span[1]','xpath')
-    //     verificationText.txt.should.eventually.include(firstName+" "+lastName, "The parents name ("+firstName+" "+lastName+") did not appear properly").notify(done);
-    //   })
-    // });
+        studentVerificationText.txt.should.eventually.include(student2FirstName+" "+student2LastName, "The students name ("+student2FirstName+" "+student2LastName+") did not appear properly")
+      })
+      .then(() => {
+        var verificationText = page.getInnerHTML('/html/body/div[1]/div/div/parent-crm-modal/div/div[1]/div/h4/div/span[1]','xpath')
+        verificationText.txt.should.eventually.include(firstName+" "+lastName, "The parents name ("+firstName+" "+lastName+") did not appear properly").notify(done);
+      })
+    });
 
     function createSchoolTest(category,type){
       it('Create a '+type+' '+category+' and search for it', function(done){
