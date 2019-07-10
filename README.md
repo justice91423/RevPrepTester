@@ -18,7 +18,7 @@ You may also want to install Mocha globally so you will only need to type "mocha
 then edit lib/credentials.js with the credentials of a Wonka users (wonka_tester) and an admin user (permissions_tester)
 
 
-##Usage
+## Usage
 
 To start full test run through with reporting...
 mocha test --reporter mochawesome --reporter-options showSkipped=true
