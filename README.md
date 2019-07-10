@@ -1,5 +1,7 @@
-# Automated testing for Orbit
+# RevPrepTester
 
+* [Installation](#Installation)
+* [Usage](#Usage)
 
 ## Overview
 RevPrepTester is an automated testing system used to test Revolution Preps web applications, such as Orbit.
