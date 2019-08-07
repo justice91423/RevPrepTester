@@ -150,17 +150,17 @@ function tests(browser){
         var headerVerificationTexts={};
         for (var i = role.sectionsAndItems.length - 1; i >= 0; i--) {
           var header = role.sectionsAndItems[i]["header"];
-          headerVerificationTexts[header] = page.checkSectionHeader(i+1);
-          headerVerificationTexts[header].txt.should.eventually.equal(header, header+' is not present on the navbar');
+          headerVerificationTexts[header] = page.checkSectionHeader(i+1)
+          headerVerificationTexts[header].txt.should.eventually.equal(header, 'the header '+header+' is not present on the navbar')
           var items = role.sectionsAndItems[i]["items"];
           var itemVerificationTexts={};
           var enoughItems={};
           page.openSection(i+1);
           for (var x = items.length - 1; x >= 0; x--) {
             enoughItems[items[x]] = page.sectionItemIsThere(x+1,header)
-            enoughItems[items[x]].should.eventually.equal(true, items[x]+' is not present on the navbar');
+            enoughItems[items[x]].should.eventually.equal(true, items[x]+' is not present on the navbar')
             itemVerificationTexts[items[x]] = page.checkSectionItem(x+1,items[x],header);
-            itemVerificationTexts[items[x]].txt.should.eventually.equal(' '+items[x]+' ', items[x]+' is not present, or misplaced, on the navbar');
+            itemVerificationTexts[items[x]].txt.should.eventually.equal(' '+items[x]+' ', items[x]+' is not present, or misplaced, on the navbar')
           }
           var moreSectionItems = page.sectionItemIsThere(items.length+1,header)
           moreSectionItems.should.eventually.equal(false,header+" has at least one extra item.").notify(done);
@@ -332,8 +332,6 @@ function tests(browser){
           verificationText.txt.should.eventually.contain(' Batch Enroll ').notify(done);
         });
       }
-
-
     }
   })
 }

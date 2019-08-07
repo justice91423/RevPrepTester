@@ -110,7 +110,7 @@ function tests(browser){
       "Parent Referral",
       "Mock Exam",
       "Internet Search",
-      "Initial School Contact",
+      "School Contact",
       "Parent Event",
       "Seminar/Workshop",
       "Gift Card",

@@ -63,7 +63,7 @@ function tests(browser){
     function buyAndComeBack(firstName,lastName,hoursPurchased){
       return page.visit('https://enroll.rev-prep.com/cart/tutor-packages')
         .then(() => sleep(2000))
-        .then(() => page.addPtHoursToCart("PSAT", "Advanced", 3, hoursPurchased, 99, true, true))
+        .then(() => page.addPtHoursToCart("PSAT/NMSQT", "Advanced", 3, hoursPurchased, 99, true, true))
         .then(() => page.completePurchaseFromCart(firstName,lastName))
         .then(() => page.visit('https://admin.rev-prep.com/dashboard'))
         .then(() => page.clickAdvisorOption("family-search"))
@@ -108,7 +108,7 @@ function tests(browser){
     var testableCriteria = [
       ["Advisor","All Revolution","Unassigned"],
       ["Age","<1",">1"],
-      ["Contact Attempts","Less than 4","1"],
+      ["Contact Attempts","3 or less","1"],
       
       ["Contact List Reason","Not on Contact List","On Contact List"],
       ["Course ID","15817","26047"],
@@ -135,7 +135,7 @@ function tests(browser){
     ]
 
     // var testableCriteria = [
-    //   ["Leads","Not Ready","All"]
+    //   ["Contact Attempts","3 or less","1"]
     // ]
 
     for (var i = testableCriteria.length - 1; i >= 0; i--) {

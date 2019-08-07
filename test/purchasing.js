@@ -133,7 +133,7 @@ function tests(browser){
       })
 
       page.visit('https://enroll.rev-prep.com/cart/tutor-packages')
-      .then(() => page.addPtHoursToCart("PSAT", tier, 3, hours, price, custom, membership))
+      .then(() => page.addPtHoursToCart("PSAT/NMSQT", tier, 3, hours, price, custom, membership))
       .then(() => page.completePurchaseFromCart())
       .then((orderID) => page.visit('https://admin.rev-prep.com/orders/'+orderID))
       .then(() => page.getInnerHTML("//strong[preceding::strong[ contains(string(), 'Paid')]]",'xpath'))

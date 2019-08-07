@@ -152,7 +152,7 @@ function tests(browser){
         page.loginAdmin(username,password)
         .then(() => sleep(5000))
         .then(() => page.visit('https://enroll.rev-prep.com/cart/tutor-packages'))
-        .then(() => page.addPtHoursToCart("PSAT", "Advanced", 3, 10, 129, true, false))
+        .then(() => page.addPtHoursToCart("PSAT/NMSQT", "Advanced", 3, 10, 129, true, false))
         .then(() => page.completePurchaseFromCart(parentFirstName,parentLastName,studentFirstName,studentLastName))
         // page.purchaseMembership(parentFirstName,parentLastName,studentFirstName,studentLastName)
         .then(() => page.clickReportsOption("transactions"))
@@ -188,8 +188,8 @@ function tests(browser){
             var parentLastName = page.randomString(10,"alpha");
             var studentFirstName = page.randomString(10,"alpha");
             var studentLastName = page.randomString(10,"alpha");
-            var orginalSales =""
-            var orginalNewTutoringParents =""
+            var originalSales =""
+            var originalNewTutoringParents =""
 
             page.visit('https://admin.rev-prep.com/login');
             page.loginAdmin(username,password)
@@ -202,19 +202,19 @@ function tests(browser){
             .then(() => {
                 page.find(dailySalesReportSelector.Listing(userFirstName,userLastName,"Sales"),'xpath').getText()
                 .then((gotten) => {
-                    orginalSales = Number(gotten.replace(/[^0-9.-]+/g,""))
+                    originalSales = Number(gotten.replace(/[^0-9.-]+/g,""))
                     sleep(100);
                 })
             })
             .then(() => {
                 page.find(dailySalesReportSelector.Listing(userFirstName,userLastName,"New Tutoring Parents"),'xpath').getText()
                 .then((gotten) => {
-                    orginalNewTutoringParents = Number(gotten)
+                    originalNewTutoringParents = Number(gotten)
                     sleep(100);
                 })
             })
             .then(() => page.visit('https://enroll.rev-prep.com/cart/tutor-packages'))
-            .then(() => page.addPtHoursToCart("PSAT", "Advanced", 3, 10, 129, true, false))
+            .then(() => page.addPtHoursToCart("PSAT/NMSQT", "Advanced", 3, 10, 129, true, false))
             .then(() => page.completePurchaseFromCart(parentFirstName,parentLastName,studentFirstName,studentLastName))
             .then(() => page.clickReportsOption("daily-sales"))
             .then(() => sleep(500))
@@ -225,14 +225,14 @@ function tests(browser){
                 page.find(dailySalesReportSelector.Listing(userFirstName,userLastName,"Sales"),'xpath').getText()
                 .then((gotten) => {
                     gotten = Number(gotten.replace(/[^0-9.-]+/g,""))
-                    gotten.should.equal(orginalSales+1540, "Sales is not correct");
+                    gotten.should.equal(originalSales+1540, "Sales is not correct");
                 })
             })
             .then(() => {
                 page.find(dailySalesReportSelector.Listing(userFirstName,userLastName,"New Tutoring Parents"),'xpath').getText()
                 .then((gotten) => {
                     gotten = Number(gotten)
-                    gotten.should.equal(orginalNewTutoringParents+1, "New Tutoring Parents is not correct");
+                    gotten.should.equal(originalNewTutoringParents+1, "New Tutoring Parents is not correct");
                 })
             })
             .then(() => done()) 

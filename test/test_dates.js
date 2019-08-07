@@ -36,8 +36,9 @@ function tests(browser){
 
     function gotoTestDatesScreen(){
       return page.clickElement('/html/body/ui-view/app/div/div/sidebar/nav/div/div[4]/a/span','xpath')
-      .then(page.clickElement('/html/body/div[2]/div/a[4]','xpath'));
+      .then(page.clickElement('/html/body/div/div/a[4]','xpath'));
 
+  
     }
 
     it('Test Dates screen is accessible', function(done){

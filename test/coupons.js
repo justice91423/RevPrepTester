@@ -1,4 +1,3 @@
-
 var {Dev,trys,adminBrowserss,Browserss,webdriver,sleep,describe,it,after,before,jquery,chai,chaiJquery,chaiAsPromised,should,sourceFile_credentials,addContext,testImageName} = require('../lib/top')
 
 var Page = require('../lib/admin_dashboard');
@@ -6,9 +5,7 @@ var Page = require('../lib/admin_main_page');
 var Page = require('../lib/admin_dashboard_coupons');
 var Page = require('../lib/checkout_pages');
 var Page = require('../lib/student_home_page');
-
 var startingTrys = trys
-
 var username = sourceFile_credentials.credentials_a['wonka_tester']['username']
 var password = sourceFile_credentials.credentials_a['wonka_tester']['password']
 chai.use(chaiAsPromised);
