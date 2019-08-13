@@ -303,7 +303,7 @@ function tests(browser){
         .then(() => sleep(500))
         .then(() => page.clickFirstCourseResult())
         .then(() => sleep(2000))
-        .then(() => page.countElements('//button[contains(., "Batch Enroll")]'))
+        .then(() => page.countElements('//button[contains(., "Batch Enroll") and not(contains(@class, "ng-hide"))]'))
         .then((gotten) => {
           if(role.batchEnroll){
             assert.isAtLeast(gotten.length, 1, role.name+" can NOT batch enroll")

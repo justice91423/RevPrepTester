@@ -303,7 +303,7 @@ function tests(browser){
         .then(() => sleep(500))
         .then(() => page.clickFirstCourseResult())
         .then(() => sleep(2000))
-        .then(() => page.countElements('//button[contains(., "Batch Enroll")]'))
+        .then(() => page.countElements('//button[contains(., "Batch Enroll") and not(contains(@class, "ng-hide"))]'))
         .then((gotten) => {
           if(role.batchEnroll){
             assert.isAtLeast(gotten.length, 1, role.name+" can NOT batch enroll")
@@ -339,39 +339,37 @@ function tests(browser){
         .then(() => done())
       });
 
-      if(role.setHandoff){
-        it(role.name +' can set Handoff via CRM', function(done){
-          this.retries(trys)
-          if(passing==false){
-            this.retries(0)
-            role.name.should.equal(true,role.name+' was not set properly.  This test can not be run')
+      it(role.name +' can set Handoff via CRM', function(done){
+        this.retries(trys)
+        if(passing==false){
+          this.retries(0)
+          role.name.should.equal(true,role.name+' was not set properly.  This test can not be run')
+        }
+        var firstName = page.randomString(10,"alpha");
+        var lastName = page.randomString(10,"alpha");
+        page.loginAdmin(permissions_tester_username,permissions_tester_password)
+        .then(() => sleep(5000))
+        .then(() => page.clickCreateOption(1))
+        .then(() => page.fillNewLead(firstName,lastName,false,"Gift Card","nothing","Pre-Conversation"))
+        .then(() => sleep(500))
+        .then(() => page.clickCreateButtonNewLeadModal())
+        .then(() => sleep(2000))
+        .then(() => page.clickProfileAndBillingTab())
+        .then(() => sleep(200))
+        .then(() => page.clickEditButtonOnProfileAndBillingTab())
+        .then(() => sleep(200))
+        .then(() => page.getHandofftoggles())
+        .then((gotten) => {
+          if(role.setHandoff){
+            assert.lengthOf(gotten, 1, role.name+" can NOT set Handoff via CRM")
           }
-          var firstName = page.randomString(10,"alpha");
-          var lastName = page.randomString(10,"alpha");
-          page.loginAdmin(permissions_tester_username,permissions_tester_password)
-          .then(() => sleep(5000))
-          .then(() => page.clickCreateOption(1))
-          .then(() => page.fillNewLead(firstName,lastName,false,"Gift Card","nothing","Pre-Conversation"))
-          .then(() => sleep(500))
-          .then(() => page.clickCreateButtonNewLeadModal())
-          .then(() => sleep(2000))
-          .then(() => page.clickProfileAndBillingTab())
-          .then(() => sleep(200))
-          .then(() => page.clickEditButtonOnProfileAndBillingTab())
-          .then(() => sleep(200))
-          .then(() => page.getHandofftoggles())
-          .then((gotten) => {
-            if(role.setHandoff){
-              assert.lengthOf(gotten, 1, role.name+" can NOT set Handoff via CRM")
-            }
-            if(!role.setHandoff){
-              assert.lengthOf(gotten, 0, role.name+" Can set Handoff via CRM")
-            }
-            sleep(200)
-          })
-          .then(() => done())
-        });
-      }
+          if(!role.setHandoff){
+            assert.lengthOf(gotten, 0, role.name+" Can set Handoff via CRM")
+          }
+          sleep(200)
+        })
+        .then(() => done())
+      });
 
       it(role.name +' is or is not permitted to delete a payment method on CRM properly', function(done){
         this.retries(trys)
