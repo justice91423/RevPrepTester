@@ -1,8 +1,6 @@
 var {Dev,trys,adminBrowserss,Browserss,webdriver,sleep,describe,it,after,before,jquery,chai,chaiJquery,chaiAsPromised,should,sourceFile_credentials,addContext,testImageName} = require('../lib/top')
-
 var By = webdriver.By
 var assert = chai.assert
-
 var Page = require('../lib/admin_dashboard_new_lead_modal');
 var Page = require('../lib/admin_dashboard_course_search');
 var Page = require('../lib/admin_dashboard_course');
@@ -16,9 +14,7 @@ var Page = require('../lib/admin_dashboard_lead_sources');
 var Page = require('../lib/admin_dashboard_lead_source_page');
 var Page = require('../lib/admin_dashboard_users');
 var Page = require('../lib/admin_dashboard_refunds')
-
 var startingTrys = trys
-
 var username = sourceFile_credentials.credentials_a['wonka_tester']['username']
 var password = sourceFile_credentials.credentials_a['wonka_tester']['password']
 var permissions_tester_username = sourceFile_credentials.credentials_a['permissions_tester']['username']
@@ -26,9 +22,7 @@ var permissions_tester_password = sourceFile_credentials.credentials_a['permissi
 var usersFullName = sourceFile_credentials.credentials_a['permissions_tester']['firstName']+" "+sourceFile_credentials.credentials_a['permissions_tester']['lastName']
 
 var studentPageSelector = require('../lib/admin_dashboard_xpaths.js').studentPageXpaths;
-
 chai.use(chaiAsPromised);
-
 var jsdom = require('jsdom');
 
 const { JSDOM } = jsdom;
@@ -76,10 +70,6 @@ function tests(browser){
     var sourceFile = require('../lib/permissions_array.js');
     var permissions = sourceFile.permissions_roles;
 
-    // for (var y = permissions.length - 1; y >= 0; y--) {
-    //   navbarItemTest(permissions[y]["name"],permissions[y]["singleItems"],permissions[y]["sectionsAndItems"],permissions[y]["optionNumber"]);
-    // }
-
     for (var y = permissions.length - 1; y >= 0; y--) {
       navbarItemTest(permissions[y]);
     }
@@ -109,11 +99,8 @@ function tests(browser){
       .then(() => page.setTitleFromEditEmployeeModal("Wonka"))
       .then(() => sleep(500))
       .then(() => page.setTitleFromEditEmployeeModal("Admin"))
-      // .then(() => page.clickUpdateEditEmployeeModal())
       return ret
     }
-
-    // function navbarItemTest(name,singleItems,sectionsAndItems,optionNumber){
 
     function navbarItemTest(role){
       
@@ -191,7 +178,6 @@ function tests(browser){
         .then(() => done())
       });
       
-
       if (role.sectionsAndItems[0].items.includes("Lead Sources")){
         // if(role.setLeadSourceAdvisor && role.setLeadSourceCloser){
         //   var testname = role.name+" can edit the Advisor or Closer on the Lead Source page"
@@ -275,8 +261,6 @@ function tests(browser){
         });
       }
 
-
-
       it(role.name +' can or can NOT edit Advisor on newly created lead', function(done){
         this.retries(trys)
         if(passing==false){
@@ -295,8 +279,6 @@ function tests(browser){
         .then(() => page.mouseOverAdvisorCRM())
         .then(() => sleep(200))
         .then(() => page.getToggleEditAdvisorButtons())
-
-
         .then((gotten) => {
         if(role.setLeadAdvisor){
           assert.isAtLeast(gotten.length, 1, role.name+" can NOT edit Advisor")
@@ -308,8 +290,6 @@ function tests(browser){
         })
         .then(() => done())
       });
-
-
 
       it(role.name +' is or is not permitted to batch enroll', function(done){
         this.retries(trys)
@@ -323,9 +303,6 @@ function tests(browser){
         .then(() => sleep(500))
         .then(() => page.clickFirstCourseResult())
         .then(() => sleep(2000))
-
-
-
         .then(() => page.countElements('//button[contains(., "Batch Enroll")]'))
         .then((gotten) => {
           if(role.batchEnroll){
@@ -337,10 +314,7 @@ function tests(browser){
           sleep(200)
         })
         .then(() => done())
-
       });
-
-
 
       it(role.name +' is or is not permitted to delete exams properly', function(done){
         this.retries(trys)
@@ -381,18 +355,15 @@ function tests(browser){
           .then(() => sleep(500))
           .then(() => page.clickCreateButtonNewLeadModal())
           .then(() => sleep(2000))
-
           .then(() => page.clickProfileAndBillingTab())
           .then(() => sleep(200))
           .then(() => page.clickEditButtonOnProfileAndBillingTab())
           .then(() => sleep(200))
           .then(() => page.getHandofftoggles())
           .then((gotten) => {
-
             if(role.setHandoff){
               assert.lengthOf(gotten, 1, role.name+" can NOT set Handoff via CRM")
             }
-
             if(!role.setHandoff){
               assert.lengthOf(gotten, 0, role.name+" Can set Handoff via CRM")
             }
@@ -401,10 +372,6 @@ function tests(browser){
           .then(() => done())
         });
       }
-
-
-
-
 
       it(role.name +' is or is not permitted to delete a payment method on CRM properly', function(done){
         this.retries(trys)
@@ -421,7 +388,6 @@ function tests(browser){
         .then(() => sleep(500))
         .then(() => page.clickCreateButtonNewLeadModal())
         .then(() => sleep(2000))
-
         .then(() => page.clickProfileAndBillingTab())
         .then(() => sleep(200))
         .then(() => page.clickEnterPaymentMethodButtonOnProfileAndBillingTab())
@@ -432,14 +398,11 @@ function tests(browser){
         .then(() => sleep(2000))
         .then(() => page.clickEditPaymentMethodButtonOnProfileAndBillingTab())
         .then(() => sleep(2000))
-
         .then(() => page.getTrashButtons())
         .then((gotten) => {
-
           if(role.deletePaymentMethod){
             assert.lengthOf(gotten, 1, role.name+" can NOT delete payment method via CRM")
           }
-
           if(!role.deletePaymentMethod){
             assert.lengthOf(gotten, 0, role.name+" Can set delete payment method via CRM")
           }
